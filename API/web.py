@@ -3,8 +3,6 @@ from fastapi import FastAPI, Request
 import uvicorn
 from data import db_session
 
-db_session.global_init("db/db.db")
-
 app = FastAPI()
 
 @app.get("/")
@@ -25,6 +23,7 @@ async def create_user(request:  Request):
 
 
 if __name__ == "__main__":
+    db_session.global_init("db/db.db")
     uvicorn.run(
         "web:app",
         host="0.0.0.0",
