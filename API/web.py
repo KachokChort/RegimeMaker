@@ -1,7 +1,11 @@
 import json
+import sqlite3
+
 from fastapi import FastAPI, Request
 import uvicorn
 from data import db_session
+from data.users import User
+from data.cycles import Cycle
 
 app = FastAPI()
 
@@ -17,17 +21,87 @@ async def create_user(request:  Request):
     data = json.loads(body)
     username = data.get("username")
     password = data.get("password")
+    if not username or not password or not username.strip() or not password.strip():
+        return {"error": "Username and password are required params."}
+    if len(password) <= 3:
+        return {"error": "Short password."}
 
-    print(username, password)
-    return {"username": username, "password": password}
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if username in users:
+            return {"error": "This name is already taken"}
+        new_user = User()
+        new_user.username = username
+        new_user.password = password
+        db_sess.add(new_user)
+        db_sess.commit()
+        db_sess.close()
+    except sqlite3.IntegrityError as e:
+        return {"error": f"{e}"}
+    except Exception as e:
+        return {"error": f"{e}"}
+
+    return {"verdict": f"You successful sign up with username: {username}."}
+
+#CREATING_SYSTEM
+@app.post("/create_cycle/")
+async def create_system(request:  Request):
+    body = await request.body()
+
+    data = json.loads(body)
+    name = data.get("name")
+    user = data.get("user")
+    days_count = int(data.get("days_count"))
+    descriptions = data.get("descriptions")
+    password = data.get("password")
+
+    if not name:
+        return {"error": "Name is required parameter."}
+    if not password:
+        return {"error": "Password is required parameter."}
+    if not days_count:
+        return {"error": "Days_count is required parameter."}
+    if not descriptions:
+        return {"error": "Description is required parameter."}
+    if days_count != len(descriptions):
+        return {"error": "Invalid count elements in descriptions."}
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if user not in users:
+            return {"error": "Invalid user."}
+        user_password = db_sess.query(User).filter(User.username == user).first().password
+        if password != user_password:
+            return {"error": f"Invalid password."}
+        user_cycles = [c.name for c in db_sess.query(Cycle).filter(Cycle.user == user)]
+        if name in user_cycles:
+            return {"error": "You already have this cycle name."}
+        new_cycle = Cycle()
+        new_cycle.name = name
+        new_cycle.user = user
+        new_cycle.days_count = days_count
+        new_cycle.descriptions = descriptions
+        db_sess.add(new_cycle)
+        db_sess.commit()
+        db_sess.close()
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return {"error": f"{e}"}
+    except Exception as e:
+        print(e)
+        return {"error": f"{e}"}
+    return {"verdict": f"You successful create new cycle with name: {name}"}
+
 
 
 if __name__ == "__main__":
-    db_session.global_init("db/db.db")
     uvicorn.run(
         "web:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,  # Автоперезагрузка при изменениях
+        reload=True,
         log_level="info"
     )

@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from .db_session import Base  # ← Импортируем Base из твоего db_session.py
+from .db_session import Base
 import datetime
 
 
