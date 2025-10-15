@@ -4,10 +4,10 @@ import datetime
 
 
 class Cycle(Base):
-    __tablename__ = 'cycless'
+    __tablename__ = 'cycles'
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), unique=True, nullable=False)
+    name = Column(String(50), nullable=False)
     user = Column(String(50), nullable=False)
     days_count = Column(Integer)
     descriptions = Column(JSON)

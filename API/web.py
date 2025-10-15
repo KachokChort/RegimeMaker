@@ -1,6 +1,6 @@
 import json
 import sqlite3
-
+import datetime
 from fastapi import FastAPI, Request
 import uvicorn
 from data import db_session
@@ -95,6 +95,58 @@ async def create_system(request:  Request):
         return {"error": f"{e}"}
     return {"verdict": f"You successful create new cycle with name: {name}"}
 
+
+#TODAY
+@app.post("/day/")
+async def create_system(request:  Request):
+    body = await request.body()
+
+    data = json.loads(body)
+    user = data.get("user")
+    day = data.get("day")
+    password = data.get("password")
+
+    if not user:
+        return {"error": "User is required parameter."}
+    if not password:
+        return {"error": "Password is required parameter."}
+    if not day:
+        return {"error": "Day is required parameter."}
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if user not in users:
+            return {"error": "Invalid user."}
+        user_password = db_sess.query(User).filter(User.username == user).first().password
+        if password != user_password:
+            return {"error": f"Invalid password."}
+        #-------------------------------
+        date_user = db_sess.query(User).filter(User.username == user).first().created_at.date()
+        format_string = "%Y-%m-%d"
+        date = datetime.datetime.strptime(day, format_string).date()
+        days = date - date_user
+        # print(date, date_user)
+        # print(days)
+        days = days.days
+        # print(days)
+        duties = []
+        # print(db_sess.query(Cycle).filter(Cycle.user == user).all())
+        for cycle in db_sess.query(Cycle).filter(Cycle.user == user).all():
+            #print(cycle.days_count)
+            dd = int(days) % int(cycle.days_count)
+            descriptions = cycle.descriptions
+            print(descriptions)
+            duties.append(descriptions[dd])
+            print(duties)
+        return duties
+        # -------------------------------
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return {"error": f"{e}"}
+    except Exception as e:
+        print(e)
+        return {"error": f"{e}"}
 
 
 if __name__ == "__main__":
