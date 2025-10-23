@@ -3,9 +3,9 @@ import datetime
 
 date = datetime.date.today().strftime("%Y-%m-%d")
 
-params = {"user": "Dimon",
-          "password": "11111",
-          "day": "2025-12-26"}
+params = {"user": "Timoha",
+          "password": "12345",
+          "day": "2025-11-06"}
 response = requests.post("http://127.0.0.1:8000/day/", json=params)
 
 

@@ -54,6 +54,7 @@ async def create_system(request:  Request):
     name = data.get("name")
     user = data.get("user")
     days_count = int(data.get("days_count"))
+    pause = int(data.get("pause"))
     descriptions = data.get("descriptions")
     password = data.get("password")
 
@@ -67,6 +68,8 @@ async def create_system(request:  Request):
         return {"error": "Description is required parameter."}
     if days_count != len(descriptions):
         return {"error": "Invalid count elements in descriptions."}
+    if pause < 0:
+        return {"error": "Negative pause."}
     try:
         db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
@@ -83,6 +86,7 @@ async def create_system(request:  Request):
         new_cycle.name = name
         new_cycle.user = user
         new_cycle.days_count = days_count
+        new_cycle.pause = pause
         new_cycle.descriptions = descriptions
         db_sess.add(new_cycle)
         db_sess.commit()
@@ -134,11 +138,14 @@ async def create_system(request:  Request):
         # print(db_sess.query(Cycle).filter(Cycle.user == user).all())
         for cycle in db_sess.query(Cycle).filter(Cycle.user == user).all():
             #print(cycle.days_count)
-            dd = int(days) % int(cycle.days_count)
+            dd = int(days) % (int(cycle.days_count) + int(cycle.pause))
             descriptions = cycle.descriptions
-            print(descriptions)
-            duties.append(descriptions[dd])
-            print(duties)
+            #print(descriptions)
+            try:
+                duties.append(descriptions[abs(dd)])
+            except IndexError as e:
+                pass
+            #print(duties)
         return duties
         # -------------------------------
     except sqlite3.IntegrityError as e:

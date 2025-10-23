@@ -5,6 +5,7 @@ params = {"name": "Mathematic",
           "user": "Timoha",
           "password": "12345",
           "days_count": "7",
+          "pause": "7",
           "descriptions": [
               "Algebra: complete 3 examples.",
               "Geometry: complete 3 examples.",
