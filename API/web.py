@@ -9,13 +9,15 @@ from data.cycles import Cycle
 
 app = FastAPI()
 
+
 @app.get("/")
 def read_root():
     return {"message": "Hello World"}
 
+
 # REGISTRATION
 @app.post("/sign_up/")
-async def create_user(request:  Request):
+async def create_user(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -45,9 +47,10 @@ async def create_user(request:  Request):
 
     return {"verdict": f"You successful sign up with username: {username}."}
 
-#CREATING_SYSTEM
+
+# CREATING_SYSTEM
 @app.post("/create_cycle/")
-async def create_system(request:  Request):
+async def create_system(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -108,9 +111,9 @@ async def create_system(request:  Request):
     return {"verdict": f"You successful create new cycle with name: {name}"}
 
 
-#TODAY
+# TODAY
 @app.post("/day/")
-async def create_system(request:  Request):
+async def create_system(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -133,7 +136,7 @@ async def create_system(request:  Request):
         user_password = db_sess.query(User).filter(User.username == user).first().password
         if password != user_password:
             return {"error": f"Invalid password."}
-        #-------------------------------
+        # -------------------------------
         date_user = db_sess.query(Cycle).filter(Cycle.user == user).first().start_at
         format_string = "%Y-%m-%d"
         date = datetime.datetime.strptime(day, format_string).date()
@@ -146,15 +149,15 @@ async def create_system(request:  Request):
         duties = []
         # print(db_sess.query(Cycle).filter(Cycle.user == user).all())
         for cycle in db_sess.query(Cycle).filter(Cycle.user == user).all():
-            #print(cycle.days_count)
+            # print(cycle.days_count)
             dd = int(days) % (int(cycle.days_count) + int(cycle.pause))
             descriptions = cycle.descriptions
-            #print(descriptions)
+            # print(descriptions)
             try:
                 duties.append(descriptions[abs(dd)])
             except IndexError as e:
                 pass
-            #print(duties)
+            # print(duties)
         return duties
         # -------------------------------
     except sqlite3.IntegrityError as e:
@@ -166,7 +169,7 @@ async def create_system(request:  Request):
 
 
 @app.post("/delete_cycle/")
-async def create_system(request:  Request):
+async def create_system(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -195,6 +198,40 @@ async def create_system(request:  Request):
         db_sess.commit()
 
         return {"verdict": f"Successful delete cycle: {cycle_name}"}
+
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return {"error": f"{e}"}
+    except Exception as e:
+        print(e)
+        return {"error": f"{e}"}
+
+
+@app.post("/user_cycles/")
+async def read_root(request: Request):
+    body = await request.body()
+
+    data = json.loads(body)
+
+    user = data.get("user")
+    password = data.get("password")
+
+    if not user:
+        return {"error": "User is required parameter."}
+    if not password:
+        return {"error": "Password is required parameter."}
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if user not in users:
+            return {"error": "Invalid user."}
+        user_password = db_sess.query(User).filter(User.username == user).first().password
+        if password != user_password:
+            return {"error": f"Invalid password."}
+        user_cycles = [c.name for c in db_sess.query(Cycle).filter(Cycle.user == user)]
+
+        return {"verdict": "Successful getting cycles.", "cycles": user_cycles}
 
     except sqlite3.IntegrityError as e:
         print(e)
