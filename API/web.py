@@ -57,7 +57,14 @@ async def create_system(request:  Request):
     pause = int(data.get("pause"))
     descriptions = data.get("descriptions")
     password = data.get("password")
+    start_at = data.get("start_at")
 
+    try:
+        format_string = "%Y-%m-%d"
+        date = datetime.datetime.strptime(start_at, format_string).date()
+    except Exception as e:
+        print(f"Error start_at: {e}")
+        return {"error": "Invalid start_at."}
     if not name:
         return {"error": "Name is required parameter."}
     if not password:
@@ -88,6 +95,7 @@ async def create_system(request:  Request):
         new_cycle.days_count = days_count
         new_cycle.pause = pause
         new_cycle.descriptions = descriptions
+        new_cycle.start_at = start_at
         db_sess.add(new_cycle)
         db_sess.commit()
         db_sess.close()
@@ -126,9 +134,10 @@ async def create_system(request:  Request):
         if password != user_password:
             return {"error": f"Invalid password."}
         #-------------------------------
-        date_user = db_sess.query(User).filter(User.username == user).first().created_at.date()
+        date_user = db_sess.query(Cycle).filter(Cycle.user == user).first().start_at
         format_string = "%Y-%m-%d"
         date = datetime.datetime.strptime(day, format_string).date()
+        date_user = datetime.datetime.strptime(date_user, format_string).date()
         days = date - date_user
         # print(date, date_user)
         # print(days)
@@ -148,6 +157,45 @@ async def create_system(request:  Request):
             #print(duties)
         return duties
         # -------------------------------
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return {"error": f"{e}"}
+    except Exception as e:
+        print(e)
+        return {"error": f"{e}"}
+
+
+@app.post("/delete_cycle/")
+async def create_system(request:  Request):
+    body = await request.body()
+
+    data = json.loads(body)
+    cycle_name = data.get("cycle_name")
+    user = data.get("user")
+    password = data.get("password")
+
+    if not user:
+        return {"error": "User is required parameter."}
+    if not password:
+        return {"error": "Password is required parameter."}
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if user not in users:
+            return {"error": "Invalid user."}
+        user_password = db_sess.query(User).filter(User.username == user).first().password
+        if password != user_password:
+            return {"error": f"Invalid password."}
+        user_cycles = [c.name for c in db_sess.query(Cycle).filter(Cycle.user == user)]
+        if cycle_name not in user_cycles:
+            return {"error": f"You have not with cycle. Your cycles: {user_cycles}"}
+
+        db_sess.query(Cycle).filter(Cycle.name == cycle_name).delete()
+        db_sess.commit()
+
+        return {"verdict": f"Successful delete cycle: {cycle_name}"}
+
     except sqlite3.IntegrityError as e:
         print(e)
         return {"error": f"{e}"}

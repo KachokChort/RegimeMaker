@@ -6,6 +6,7 @@ params = {"name": "Mathematic",
           "password": "12345",
           "days_count": "7",
           "pause": "7",
+          "start_at": "2025-10-27",
           "descriptions": [
               "Algebra: complete 3 examples.",
               "Geometry: complete 3 examples.",

@@ -12,7 +12,7 @@ class Cycle(Base):
     days_count = Column(Integer)
     descriptions = Column(JSON)
     pause = Column(Integer)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    start_at = Column(String(50))
 
     def __str__(self):
         return self.name
