@@ -326,6 +326,45 @@ async def read_root(request: Request):
         return {"error": f"{e}"}
 
 
+@app.post("/delete_note/")
+async def create_system(request: Request):
+    body = await request.body()
+
+    data = json.loads(body)
+    note_name = data.get("note_name")
+    user = data.get("user")
+    password = data.get("password")
+
+    if not user:
+        return {"error": "User is required parameter."}
+    if not password:
+        return {"error": "Password is required parameter."}
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if user not in users:
+            return {"error": "Invalid user."}
+        user_password = db_sess.query(User).filter(User.username == user).first().password
+        if password != user_password:
+            return {"error": f"Invalid password."}
+        user_notes = [c.name for c in db_sess.query(Note).filter(Note.user == user)]
+        if note_name not in user_notes:
+            return {"error": f"You have not with note. Your notes: {user_notes}"}
+
+        db_sess.query(Note).filter(Note.name == note_name).delete()
+        db_sess.commit()
+
+        return {"verdict": f"Successful delete cycle: {note_name}"}
+
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return {"error": f"{e}"}
+    except Exception as e:
+        print(e)
+        return {"error": f"{e}"}
+
+
 if __name__ == "__main__":
     uvicorn.run(
         "web:app",
