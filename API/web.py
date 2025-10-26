@@ -6,6 +6,7 @@ import uvicorn
 from data import db_session
 from data.users import User
 from data.cycles import Cycle
+from data.notes import Note
 
 app = FastAPI()
 
@@ -158,7 +159,7 @@ async def create_system(request: Request):
             except IndexError as e:
                 pass
             # print(duties)
-        return duties
+        return {"verdict": "Successful getting duties.", "duties": duties}
         # -------------------------------
     except sqlite3.IntegrityError as e:
         print(e)
@@ -239,6 +240,56 @@ async def read_root(request: Request):
     except Exception as e:
         print(e)
         return {"error": f"{e}"}
+
+
+@app.post("/create_note/")
+async def create_system(request: Request):
+    body = await request.body()
+
+    data = json.loads(body)
+    name = data.get("name")
+    user = data.get("user")
+    descriptions = data.get("descriptions")
+    password = data.get("password")
+
+    if not name:
+        return {"error": "Name is required parameter."}
+    if not password:
+        return {"error": "Password is required parameter."}
+    if not descriptions:
+        return {"error": "Description is required parameter."}
+    if type(descriptions) is not str:
+        return {"error": "Invalid description."}
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if user not in users:
+            return {"error": "Invalid user."}
+        user_password = db_sess.query(User).filter(User.username == user).first().password
+        if password != user_password:
+            return {"error": f"Invalid password."}
+        user_notes = [c.name for c in db_sess.query(Note).filter(Note.user == user)]
+        if name in user_notes:
+            return {"error": "You already have this note name."}
+
+        #-----------------------------
+        new_note = Note()
+        new_note.name = name
+        new_note.user = user
+        new_note.descriptions = descriptions
+        db_sess.add(new_note)
+        db_sess.commit()
+        db_sess.close()
+        # -----------------------------
+
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return {"error": f"{e}"}
+    except Exception as e:
+        print(e)
+        return {"error": f"{e}"}
+    return {"verdict": f"You successful create new note with name: {name}"}
 
 
 if __name__ == "__main__":
