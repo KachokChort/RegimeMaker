@@ -12,13 +12,13 @@ app = FastAPI()
 
 
 @app.get("/")
-def read_root():
+def index():
     return {"message": "Hello World"}
 
 
 # REGISTRATION
 @app.post("/sign_up/")
-async def create_user(request: Request):
+async def sign_up(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -51,7 +51,7 @@ async def create_user(request: Request):
 
 # CREATING_SYSTEM
 @app.post("/create_cycle/")
-async def create_system(request: Request):
+async def create_cycle(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -114,7 +114,7 @@ async def create_system(request: Request):
 
 # TODAY
 @app.post("/day/")
-async def create_system(request: Request):
+async def day(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -170,7 +170,7 @@ async def create_system(request: Request):
 
 
 @app.post("/delete_cycle/")
-async def create_system(request: Request):
+async def delete_cycle(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -209,7 +209,7 @@ async def create_system(request: Request):
 
 
 @app.post("/user_cycles/")
-async def read_root(request: Request):
+async def get_cycles(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -243,7 +243,7 @@ async def read_root(request: Request):
 
 
 @app.post("/create_note/")
-async def create_system(request: Request):
+async def create_note(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -293,7 +293,7 @@ async def create_system(request: Request):
 
 
 @app.post("/get_notes/")
-async def read_root(request: Request):
+async def get_notes(request: Request):
     body = await request.body()
 
     data = json.loads(body)
@@ -327,7 +327,7 @@ async def read_root(request: Request):
 
 
 @app.post("/delete_note/")
-async def create_system(request: Request):
+async def delete_note(request: Request):
     body = await request.body()
 
     data = json.loads(body)
