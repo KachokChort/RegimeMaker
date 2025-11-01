@@ -11,11 +11,11 @@ global_init("db/db.db")
 db_session = create_session()
 # db_session.add(user)
 
-user = db_session.query(User).first()
-days = user.days.copy()
-days["01-11-2025"] = {'Math Analys: read book 1 hour.': 0}
-user.days = days.copy()
-db_session.commit()
+# user = db_session.query(User).first()
+# days = user.days.copy()
+# days["01-11-2025"] = {'Math Analys: read book 1 hour.': 0}
+# user.days = days.copy()
+# db_session.commit()
 
 db_session.commit()
 

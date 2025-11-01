@@ -142,22 +142,24 @@ async def day(request: Request):
         if password != user_password:
             return {"error": f"Invalid password."}
         # -------------------------------
-        date_user = db_sess.query(Cycle).filter(Cycle.user == user).first().start_at
         format_string = "%Y-%m-%d"
         date = datetime.datetime.strptime(day, format_string).date()
-        date_user = datetime.datetime.strptime(date_user, format_string).date()
-        days = date - date_user
-        days = days.days
 
         duties = {}
         for cycle in db_sess.query(Cycle).filter(Cycle.user == user).all():
+            date_cycle = cycle.start_at
+            date_cycle = datetime.datetime.strptime(date_cycle, format_string).date()
+            days = date - date_cycle
+            days = days.days
             dd = int(days) % (int(cycle.days_count) + int(cycle.pause))
             descriptions = cycle.descriptions
+
             try:
                 duties[descriptions[abs(dd)]] = 0
             except IndexError as e:
-                pass
-
+                print(e)
+        # print(duties)
+        # print("AHAHAAHAHHAHAAHHAHAAHHAAHHAAHAHAHAAHAH")
         if day not in user_obj.days:
             user_days = user_obj.days.copy()
             user_days[day] = duties
@@ -166,11 +168,13 @@ async def day(request: Request):
             db_sess.close()
             return {"verdict": "Successful getting duties.", "duties": duties}
         else:
-            user_duties = user_obj.days[day]
+            user_duties = user_obj.days[day].copy()
             for i in duties:
                 if i in user_duties:
                     duties[i] = user_duties[i]
-            user_obj.days[day] = duties.copy()
+            user_days = user_obj.days.copy()
+            user_days[day] = duties
+            user_obj.days = user_days.copy()
             db_sess.commit()
             db_sess.close()
             return {"verdict": "Successful getting duties.", "duties": duties}
