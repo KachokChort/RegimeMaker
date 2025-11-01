@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, JSON
 from .db_session import Base
 import datetime
 
@@ -10,6 +10,7 @@ class User(Base):
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(255))
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    days = Column(JSON)
 
     def __str__(self):
         return self.username

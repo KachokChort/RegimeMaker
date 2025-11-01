@@ -38,6 +38,7 @@ async def sign_up(request: Request):
         new_user = User()
         new_user.username = username
         new_user.password = password
+        new_user.days = {}
         db_sess.add(new_user)
         db_sess.commit()
         db_sess.close()
@@ -131,10 +132,13 @@ async def day(request: Request):
     try:
         db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
+
+        user_obj = db_sess.query(User).filter(User.username == user).first()
+
         users = [user.username for user in db_sess.query(User).all()]
         if user not in users:
             return {"error": "Invalid user."}
-        user_password = db_sess.query(User).filter(User.username == user).first().password
+        user_password = user_obj.password
         if password != user_password:
             return {"error": f"Invalid password."}
         # -------------------------------
@@ -143,23 +147,34 @@ async def day(request: Request):
         date = datetime.datetime.strptime(day, format_string).date()
         date_user = datetime.datetime.strptime(date_user, format_string).date()
         days = date - date_user
-        # print(date, date_user)
-        # print(days)
         days = days.days
-        # print(days)
-        duties = []
-        # print(db_sess.query(Cycle).filter(Cycle.user == user).all())
+
+        duties = {}
         for cycle in db_sess.query(Cycle).filter(Cycle.user == user).all():
-            # print(cycle.days_count)
             dd = int(days) % (int(cycle.days_count) + int(cycle.pause))
             descriptions = cycle.descriptions
-            # print(descriptions)
             try:
-                duties.append(descriptions[abs(dd)])
+                duties[descriptions[abs(dd)]] = 0
             except IndexError as e:
                 pass
-            # print(duties)
-        return {"verdict": "Successful getting duties.", "duties": duties}
+
+        if day not in user_obj.days:
+            user_days = user_obj.days.copy()
+            user_days[day] = duties
+            user_obj.days = user_days.copy()
+            db_sess.commit()
+            db_sess.close()
+            return {"verdict": "Successful getting duties.", "duties": duties}
+        else:
+            user_duties = user_obj.days[day]
+            for i in duties:
+                if i in user_duties:
+                    duties[i] = user_duties[i]
+            user_obj.days[day] = duties.copy()
+            db_sess.commit()
+            db_sess.close()
+            return {"verdict": "Successful getting duties.", "duties": duties}
+
         # -------------------------------
     except sqlite3.IntegrityError as e:
         print(e)
