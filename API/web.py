@@ -16,6 +16,33 @@ def index():
     return {"message": "Hello World"}
 
 
+@app.post("/user/")
+async def user(request: Request):
+    body = await request.body()
+
+    data = json.loads(body)
+    username = data.get("username")
+    password = data.get("password")
+    if not username or not password or not username.strip() or not password.strip():
+        return {"error": "Username and password are required params."}
+
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if username not in users:
+            return {"error": "This user does not exist."}
+        user_password = db_sess.query(User).filter(User.username == username).first().password
+        if password != user_password:
+            return {"error": f"Invalid password."}
+    except sqlite3.IntegrityError as e:
+        return {"error": f"{e}"}
+    except Exception as e:
+        return {"error": f"{e}"}
+
+    return {"verdict": "This user exists."}
+
+
 # REGISTRATION
 @app.post("/sign_up/")
 async def sign_up(request: Request):
@@ -388,7 +415,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "web:app",
         host="0.0.0.0",
-        port=8000,
+        port=8001,
         reload=True,
         log_level="info"
     )

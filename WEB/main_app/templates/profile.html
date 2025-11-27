@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - Name</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            background-color: #ff4444;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .nav-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: white;
+            color: #333;
+            border: 2px solid #ff4444;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .nav-btn.active {
+            background-color: #ff4444;
+            color: white;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background-color: #ffeaea;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .profile-info {
+            max-width: 500px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Добро пожаловать, {{ username }}!</h1>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <button class="nav-btn active" onclick="showTab('profile')">Профиль</button>
+        <button class="nav-btn" onclick="showTab('notes')">Заметки</button>
+        <button class="nav-btn" onclick="showTab('cycles')">Циклы</button>
+        <button class="nav-btn" onclick="showTab('create_cycle')">Создать цикл</button>
+        <button class="nav-btn" onclick="showTab('create_note')">Создать заметку</button>
+        <button class="nav-btn" onclick="showTab('day')">День</button>
+    </div>
+
+    <div class="content">
+        <!-- Вкладка Профиль -->
+        <div id="profile" class="tab-content active">
+            <h2>Информация профиля</h2>
+            <div class="profile-info">
+                <div class="info-item">
+                    <span class="info-label">Имя пользователя:</span> {{ username }}
+                </div>
+                <!-- Можно добавить другую информацию -->
+            </div>
+        </div>
+
+        <!-- Вкладка Заметки -->
+        <div id="notes" class="tab-content">
+            <h2>Мои заметки</h2>
+            <p>Здесь будут ваши заметки...</p>
+        </div>
+
+        <!-- Вкладка Циклы -->
+        <div id="cycles" class="tab-content">
+            <h2>Мои циклы</h2>
+            <!-- Вкладка Циклы -->
+            <div id="cycles" class="tab-content">
+                <h2>Мои циклы</h2>
+
+                <div class="cycles-list">
+                    {% for cycle in cycles %}
+                    <div class="cycle-card">
+                        <div class="cycle-header">
+                            <h3>{{ cycle.name }}</h3>
+                            <form method="post" action="/delete_cycle/" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="cycle_name" value="{{ cycle.name }}">
+                                <input type="hidden" name="user" value="{{ username }}">
+                                <button type="submit" class="delete-btn" onclick="return confirm('Удалить цикл?')">
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                        <div class="cycle-info">
+                            <div class="info-row">
+                                <span class="info-label">Дней в цикле:</span>
+                                <span>{{ cycle.days_count }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Пауза:</span>
+                                <span>{{ cycle.pause }} дней</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Начало:</span>
+                                <span>{{ cycle.start_at }}</span>
+                            </div>
+                        </div>
+                        <div class="cycle-descriptions">
+                            <strong>Описания дней:</strong>
+                            <ul>
+                                {% for desc in cycle.descriptions %}
+                                <li>{{ desc }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="no-cycles">
+                        <p>У вас пока нет циклов</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка Создать цикл -->
+        <div id="create_cycle" class="tab-content">
+            <h2>Создать цикл</h2>
+            <p>...</p>
+        </div>
+
+        <!-- Вкладка Создать заметку -->
+        <div id="create_note" class="tab-content">
+            <h2>Создать заметку</h2>
+            <p>циклы...</p>
+        </div>
+
+        <!-- Вкладка день -->
+        <div id="day" class="tab-content">
+            <h2>День</h2>
+            <p>...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTab(tabName) {
+        // Скрыть все вкладки
+        const tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => tab.classList.remove('active'));
+
+        // Показать выбранную вкладку
+        document.getElementById(tabName).classList.add('active');
+
+        // Обновить активные кнопки
+        const buttons = document.querySelectorAll('.nav-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        event.target.classList.add('active');
+    }
+</script>
+</body>
+</html>
