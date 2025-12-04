@@ -276,7 +276,7 @@ async def get_cycles(request: Request):
         user_password = db_sess.query(User).filter(User.username == user).first().password
         if password != user_password:
             return {"error": f"Invalid password."}
-        user_cycles = [c.name for c in db_sess.query(Cycle).filter(Cycle.user == user)]
+        user_cycles = [c for c in db_sess.query(Cycle).filter(Cycle.user == user)]
 
         return {"verdict": "Successful getting cycles.", "cycles": user_cycles}
 
@@ -360,7 +360,7 @@ async def get_notes(request: Request):
         user_password = db_sess.query(User).filter(User.username == user).first().password
         if password != user_password:
             return {"error": f"Invalid password."}
-        user_notes = [c.name for c in db_sess.query(Note).filter(Note.user == user)]
+        user_notes = [n for n in db_sess.query(Note).filter(Note.user == user)]
 
         return {"verdict": "Successful getting notes.", "notes": user_notes}
 

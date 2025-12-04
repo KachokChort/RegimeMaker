@@ -92,6 +92,283 @@
             font-weight: bold;
             color: #ff4444;
         }
+
+        .cycles-list {
+        display: grid;
+        gap: 20px;
+        max-width: 800px;
+        }
+
+        .cycle-card {
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8f8f8;
+        }
+
+        .cycle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cycle-header h3 {
+            margin: 0;
+            color: #ff4444;
+        }
+
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .delete-btn:hover {
+            background-color: #cc3333;
+        }
+
+        .cycle-info {
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            padding: 3px 0;
+        }
+
+        .cycle-descriptions {
+            margin-top: 10px;
+        }
+
+        .cycle-descriptions ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        .cycle-descriptions li {
+            margin-bottom: 3px;
+        }
+
+        .no-cycles {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .notes-list {
+            display: grid;
+            gap: 20px;
+            max-width: 800px;
+        }
+
+        .note-card {
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8f8f8;
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .note-header h3 {
+            margin: 0;
+            color: #ff4444;
+        }
+
+        .note-content {
+            line-height: 1.5;
+        }
+
+        .note-content p {
+            margin: 0;
+            white-space: pre-wrap; /* Сохраняет переносы строк */
+        }
+
+        .no-notes {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .create-form {
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #ff4444;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group small {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #cc3333;
+        }
+        .day-selector {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .date-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-form label {
+            font-weight: bold;
+        }
+
+        .date-form input[type="date"] {
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .date-form input[type="date"]:focus {
+            border-color: #ff4444;
+            outline: none;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn-small:hover {
+            background-color: #cc3333;
+        }
+
+        .selected-date {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff4444;
+        }
+
+        .selected-date h3 {
+            color: #ff4444;
+            margin: 0;
+        }
+
+        .duties-list {
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        .duty-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #f8f8f8;
+            border-left: 4px solid #ff4444;
+            border-radius: 5px;
+        }
+
+        .duty-checkbox {
+            display: flex;
+            align-items: center;
+        }
+
+        .duty-checkbox input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .duty-checkbox label {
+            font-size: 1.1em;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .duty-checkbox input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: #666;
+        }
+
+        .no-duties {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .day-summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .day-summary p {
+            margin: 5px 0;
+            color: #2e7d32;
+        }
     </style>
 </head>
 <body>
@@ -124,78 +401,193 @@
         <!-- Вкладка Заметки -->
         <div id="notes" class="tab-content">
             <h2>Мои заметки</h2>
-            <p>Здесь будут ваши заметки...</p>
+
+            <div class="notes-list">
+                {% for note in notes %}
+                <div class="note-card">
+                    <div class="note-header">
+                        <h3>{{ note.name }}</h3>
+                        <form method="post" action="{% url 'main_app:delete_note' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="note_name" value="{{ note.name }}">
+                            <input type="hidden" name="user" value="{{ username }}">
+                            <button type="submit" class="delete-btn" onclick="return confirm('Удалить заметку?')">
+                                Удалить
+                            </button>
+                        </form>
+                    </div>
+                    <div class="note-content">
+                        <p>{{ note.descriptions }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-notes">
+                    <p>У вас пока нет заметок</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
         <!-- Вкладка Циклы -->
         <div id="cycles" class="tab-content">
             <h2>Мои циклы</h2>
-            <!-- Вкладка Циклы -->
-            <div id="cycles" class="tab-content">
-                <h2>Мои циклы</h2>
 
-                <div class="cycles-list">
-                    {% for cycle in cycles %}
-                    <div class="cycle-card">
-                        <div class="cycle-header">
-                            <h3>{{ cycle.name }}</h3>
-                            <form method="post" action="/delete_cycle/" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="cycle_name" value="{{ cycle.name }}">
-                                <input type="hidden" name="user" value="{{ username }}">
-                                <button type="submit" class="delete-btn" onclick="return confirm('Удалить цикл?')">
-                                    Удалить
-                                </button>
-                            </form>
+            <div class="cycles-list">
+                {% for cycle in cycles %}
+                <div class="cycle-card">
+                    <div class="cycle-header">
+                        <h3>{{ cycle.name }}</h3>
+                        <form method="post" action="{% url 'main_app:delete_cycle' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="cycle_name" value="{{ cycle.name }}">
+                            <input type="hidden" name="user" value="{{ username }}">
+                            <button type="submit" class="delete-btn" onclick="return confirm('Удалить цикл?')">
+                                Удалить
+                            </button>
+                        </form>
+                    </div>
+                    <div class="cycle-info">
+                        <div class="info-row">
+                            <span class="info-label">Дней в цикле:</span>
+                            <span>{{ cycle.days_count }}</span>
                         </div>
-                        <div class="cycle-info">
-                            <div class="info-row">
-                                <span class="info-label">Дней в цикле:</span>
-                                <span>{{ cycle.days_count }}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Пауза:</span>
-                                <span>{{ cycle.pause }} дней</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Начало:</span>
-                                <span>{{ cycle.start_at }}</span>
-                            </div>
+                        <div class="info-row">
+                            <span class="info-label">Пауза:</span>
+                            <span>{{ cycle.pause }} дней</span>
                         </div>
-                        <div class="cycle-descriptions">
-                            <strong>Описания дней:</strong>
-                            <ul>
-                                {% for desc in cycle.descriptions %}
-                                <li>{{ desc }}</li>
-                                {% endfor %}
-                            </ul>
+                        <div class="info-row">
+                            <span class="info-label">Начало:</span>
+                            <span>{{ cycle.start_at }}</span>
                         </div>
                     </div>
-                    {% empty %}
-                    <div class="no-cycles">
-                        <p>У вас пока нет циклов</p>
+                    <div class="cycle-descriptions">
+                        <strong>Описания дней:</strong>
+                        <ul>
+                            {% for desc in cycle.descriptions %}
+                            <li>{{ desc }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    {% endfor %}
                 </div>
+                {% empty %}
+                <div class="no-cycles">
+                    <p>У вас пока нет циклов</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
 
         <!-- Вкладка Создать цикл -->
         <div id="create_cycle" class="tab-content">
-            <h2>Создать цикл</h2>
-            <p>...</p>
+            <h2>Создать новый цикл</h2>
+
+            <form method="post" action="{% url 'main_app:create_cycle' %}" class="create-form">
+                {% csrf_token %}
+                <input type="hidden" name="user" value="{{ username }}">
+
+                <div class="form-group">
+                    <label for="cycle_name">Название цикла:</label>
+                    <input type="text" id="cycle_name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="days_count">Количество дней в цикле:</label>
+                    <input type="number" id="days_count" name="days_count" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="pause">Пауза между циклами (дней):</label>
+                    <input type="number" id="pause" name="pause" min="0" value="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_at">Дата начала (ГГГГ-ММ-ДД):</label>
+                    <input type="date" id="start_at" name="start_at" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Описания дней (по одному на строку):</label>
+                    <textarea id="descriptions" name="descriptions" rows="6"
+                              placeholder="Описание дня 1&#10;Описание дня 2&#10;Описание дня 3" required></textarea>
+                    <small>Каждая строка - описание одного дня</small>
+                </div>
+
+                <button type="submit" class="btn">Создать цикл</button>
+            </form>
         </div>
 
         <!-- Вкладка Создать заметку -->
         <div id="create_note" class="tab-content">
-            <h2>Создать заметку</h2>
-            <p>циклы...</p>
+            <h2>Создать новую заметку</h2>
+
+            <form method="post" action="{% url 'main_app:create_note' %}" class="create-form">
+                {% csrf_token %}
+                <input type="hidden" name="user" value="{{ username }}">
+
+                <div class="form-group">
+                    <label for="note_name">Название заметки:</label>
+                    <input type="text" id="note_name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="note_description">Содержание заметки:</label>
+                    <textarea id="note_description" name="descriptions" rows="8"
+                              placeholder="Введите текст вашей заметки..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn">Создать заметку</button>
+            </form>
         </div>
 
-        <!-- Вкладка день -->
+        <!-- Вкладка День -->
         <div id="day" class="tab-content">
-            <h2>День</h2>
-            <p>...</p>
+            <h2>Задачи на день</h2>
+
+            <div class="day-selector">
+                <form method="post" action="/day/" class="date-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="user" value="{{ username }}">
+                    <label for="day_date">Выберите дату:</label>
+                    <input type="date" id="day_date" name="day" value="{{ selected_date }}" required>
+                    <button type="submit" class="btn-small">Показать</button>
+                </form>
+            </div>
+
+            {% if selected_date %}
+            <div class="selected-date">
+                <h3>Дата: {{ selected_date }}</h3>
+            </div>
+            {% endif %}
+
+            {% if duties %}
+            <div class="duties-list">
+                {% for duty_name, completed in duties.items %}
+                <div class="duty-item">
+                    <div class="duty-checkbox">
+                        <form method="post" action="/toggle_duty/" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="day" value="{{ selected_date }}">
+                            <input type="hidden" name="duty_name" value="{{ duty_name }}">
+                            <input type="hidden" name="user" value="{{ username }}">
+                            <input type="checkbox" id="duty_{{ forloop.counter }}"
+                                   onchange="this.form.submit()" {% if completed %}checked{% endif %}>
+                            <label for="duty_{{ forloop.counter }}">{{ duty_name }}</label>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% elif selected_date and duties == None %}
+            <div class="no-duties">
+                <p>На эту дату нет задач</p>
+            </div>
+            {% endif %}
+
+            {% if selected_date and duties %}
+            <div class="day-summary">
+                <p>Всего задач: {{ duties.items|length }}</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
