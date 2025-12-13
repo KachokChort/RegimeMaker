@@ -180,7 +180,7 @@ async def day(request: Request):
             days = days.days
             dd = int(days) % (int(cycle.days_count) + int(cycle.pause))
             descriptions = cycle.descriptions
-
+            # print(descriptions, dd)
             try:
                 duties[descriptions[abs(dd)]] = 0
             except IndexError as e:
@@ -199,6 +199,7 @@ async def day(request: Request):
             for i in duties:
                 if i in user_duties:
                     duties[i] = user_duties[i]
+            print(duties)
             user_days = user_obj.days.copy()
             user_days[day] = duties
             user_obj.days = user_days.copy()
@@ -243,6 +244,7 @@ async def delete_cycle(request: Request):
 
         db_sess.query(Cycle).filter(Cycle.name == cycle_name).delete()
         db_sess.commit()
+        db_sess.close()
 
         return {"verdict": f"Successful delete cycle: {cycle_name}"}
 
@@ -277,6 +279,9 @@ async def get_cycles(request: Request):
         if password != user_password:
             return {"error": f"Invalid password."}
         user_cycles = [c for c in db_sess.query(Cycle).filter(Cycle.user == user)]
+        #print(user_cycles)
+        # db_sess.commit()
+        # db_sess.close()
 
         return {"verdict": "Successful getting cycles.", "cycles": user_cycles}
 
@@ -361,7 +366,8 @@ async def get_notes(request: Request):
         if password != user_password:
             return {"error": f"Invalid password."}
         user_notes = [n for n in db_sess.query(Note).filter(Note.user == user)]
-
+        # db_sess.commit()
+        # db_sess.close()
         return {"verdict": "Successful getting notes.", "notes": user_notes}
 
     except sqlite3.IntegrityError as e:
@@ -400,8 +406,56 @@ async def delete_note(request: Request):
 
         db_sess.query(Note).filter(Note.name == note_name).delete()
         db_sess.commit()
+        db_sess.close()
 
         return {"verdict": f"Successful delete cycle: {note_name}"}
+
+    except sqlite3.IntegrityError as e:
+        print(e)
+        return {"error": f"{e}"}
+    except Exception as e:
+        print(e)
+        return {"error": f"{e}"}
+
+
+@app.post("/duty/")
+async def duty(request: Request):
+    body = await request.body()
+
+    data = json.loads(body)
+    selected_date = data.get("selected_date")
+    duty_name = data.get("duty_name")
+    username = data.get("user")
+    password = data.get("password")
+
+    # print(selected_date, duty_name)
+
+    if not username:
+        return {"error": "User is required parameter."}
+    if not password:
+        return {"error": "Password is required parameter."}
+    try:
+        db_session.global_init("db/db.db")
+        db_sess = db_session.create_session()
+        users = [user.username for user in db_sess.query(User).all()]
+        if username not in users:
+            return {"error": "Invalid user."}
+        user_password = db_sess.query(User).filter(User.username == username).first().password
+        if password != user_password:
+            return {"error": f"Invalid password."}
+        user = db_sess.query(User).filter(User.username == username).first()
+        print(user.days)
+        res = user.days.get(selected_date).get(duty_name)
+        # print(res)
+        new_days = user.days.copy()
+        db_sess.commit()
+        new_days[selected_date][duty_name] = 1 - res
+        # print(new_days)
+        user.days = new_days.copy()
+
+        db_sess.commit()
+
+        return {"verdict": f"Successful change of duty completion.", "duties": user.days.copy()}
 
     except sqlite3.IntegrityError as e:
         print(e)

@@ -379,10 +379,10 @@
 <div class="container">
     <div class="sidebar">
         <button class="nav-btn active" onclick="showTab('profile')">Профиль</button>
-        <button class="nav-btn" onclick="showTab('notes')">Заметки</button>
-        <button class="nav-btn" onclick="showTab('cycles')">Циклы</button>
-        <button class="nav-btn" onclick="showTab('create_cycle')">Создать цикл</button>
         <button class="nav-btn" onclick="showTab('create_note')">Создать заметку</button>
+        <button class="nav-btn" onclick="showTab('notes')">Заметки</button>
+        <button class="nav-btn" onclick="showTab('create_cycle')">Создать цикл</button>
+        <button class="nav-btn" onclick="showTab('cycles')">Циклы</button>
         <button class="nav-btn" onclick="showTab('day')">День</button>
     </div>
 
@@ -544,7 +544,7 @@
             <h2>Задачи на день</h2>
 
             <div class="day-selector">
-                <form method="post" action="/day/" class="date-form">
+                <form method="post" action="{% url 'main_app:day' %}" class="date-form">
                     {% csrf_token %}
                     <input type="hidden" name="user" value="{{ username }}">
                     <label for="day_date">Выберите дату:</label>
@@ -564,9 +564,9 @@
                 {% for duty_name, completed in duties.items %}
                 <div class="duty-item">
                     <div class="duty-checkbox">
-                        <form method="post" action="/toggle_duty/" style="display: inline;">
+                        <form method="post" action="{% url 'main_app:duty' %}" style="display: inline;">
                             {% csrf_token %}
-                            <input type="hidden" name="day" value="{{ selected_date }}">
+                            <input type="hidden" name="selected_date" value="{{ selected_date }}">
                             <input type="hidden" name="duty_name" value="{{ duty_name }}">
                             <input type="hidden" name="user" value="{{ username }}">
                             <input type="checkbox" id="duty_{{ forloop.counter }}"

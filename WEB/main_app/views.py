@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse, redirect
 import requests
 import datetime
 
+
 def index(request):
     request.session.flush()
     return render(request, "index.html", {"name": "Tayler"})
@@ -46,7 +47,8 @@ def login(request):
 def profile(request):
     username = request.session.get("username")
     password = request.session.get("password")
-    # print(username, password)
+    duties = request.session.get("duties", {})
+    selected_date = request.session.get("selected_date")
 
     # обработка входа
     params_1 = {"username": username,
@@ -77,7 +79,7 @@ def profile(request):
     else:
         notes = []
 
-    context = {"cycles": cycles, "notes": notes, "duties": [], "selected_date": datetime.date.today()}
+    context = {"cycles": cycles, "notes": notes, "duties": duties, "selected_date": selected_date, "username": username}
     return render(request, "profile.html", context)
 
 
@@ -99,7 +101,7 @@ def create_cycle(request):
 
         response = requests.post("http://127.0.0.1:8001/create_cycle/", json=params)
         print(response.json())
-        if "error" in response:
+        if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
             return redirect("main_app:profile")
@@ -118,7 +120,7 @@ def create_note(request):
                   "descriptions": request.POST.get("descriptions")}
 
         response = requests.post("http://127.0.0.1:8001/create_note/", json=params)
-        if "error" in response:
+        if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
             return redirect("main_app:profile")
@@ -136,7 +138,7 @@ def delete_cycle(request):
                   "password": password}
 
         response = requests.post("http://127.0.0.1:8001/delete_cycle/", json=params)
-        if "error" in response:
+        if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
             return redirect("main_app:profile")
@@ -154,8 +156,52 @@ def delete_note(request):
 
         response = requests.post("http://127.0.0.1:8001/delete_note/", json=params)
         print(response.json())
-        if "error" in response:
+        if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
+            return redirect("main_app:profile")
+    return redirect("main_app:profile")
+
+
+def day(request):
+    if request.method == "POST":
+        username = request.session.get("username")
+        password = request.session.get("password")
+        selected_date = request.POST.get("day")
+        print(selected_date)
+        params = {"password": password,
+                  "user": username,
+                  "day": selected_date}
+
+        response = requests.post("http://127.0.0.1:8001/day/", json=params)
+        print(response.json())
+        if "error" in response.json():
+            return HttpResponse(response.json().get("error"))
+        else:
+            request.session["selected_date"] = selected_date
+            request.session["duties"] = response.json().get("duties")
+            print(response.json().get("duties"))
+            return redirect("main_app:profile")
+    return redirect("main_app:profile")
+
+
+def duty(request):
+    if request.method == "POST":
+        username = request.session.get("username")
+        password = request.session.get("password")
+        selected_date = request.POST.get("selected_date")
+        duty_name = request.POST.get("duty_name")
+        print(selected_date, duty_name)
+        params = {"password": password,
+                  "user": username,
+                  "selected_date": selected_date,
+                  "duty_name": duty_name}
+
+        response = requests.post("http://127.0.0.1:8001/duty/", json=params)
+        print(response.json())
+        if "error" in response.json():
+            return HttpResponse(response.json().get("error"))
+        else:
+            request.session["duties"] = response.json().get("duties").get(selected_date)
             return redirect("main_app:profile")
     return redirect("main_app:profile")
