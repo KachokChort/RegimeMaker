@@ -1,0 +1,22 @@
+[
+  {
+    "id": 0,
+    "name": "Отдых"
+  },
+  {
+    "id": 1,
+    "muscles": {
+      "back": 0.7,
+      "biceps": 0.3
+    },
+    "name": "Подтягивания(Pull Ups)"
+  },
+  {
+    "id": 2,
+    "muscles": {
+      "chest": 0.7,
+      "triceps": 0.3
+    },
+    "name": "Отжимания(Push Ups)"
+  }
+]

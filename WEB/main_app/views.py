@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render, HttpResponse, redirect
 import requests
 import datetime
@@ -79,7 +81,13 @@ def profile(request):
     else:
         notes = []
 
-    context = {"cycles": cycles, "notes": notes, "duties": duties, "selected_date": selected_date, "username": username}
+    exercises = requests.post("http://127.0.0.1:8001/get_exercises/")
+
+    exercises = exercises.json()
+    # print(exercises, "----------------------------------------------")
+
+    context = {"cycles": cycles, "notes": notes, "duties": duties, "selected_date": selected_date, "username": username,
+               "exercises": exercises}
     return render(request, "profile.html", context)
 
 
@@ -88,8 +96,15 @@ def create_cycle(request):
         username = request.session.get("username")
         password = request.session.get("password")
 
-        descriptions_text = request.POST.get('descriptions')
-        descriptions = [i.strip() for i in descriptions_text.split("\n") if i.strip()]
+        data_cycle = request.POST.get('cycle_data')
+        data_cycle = json.loads(data_cycle)
+
+        descriptions = []
+        for key, value in data_cycle.items():
+            text = ""
+            for exercise in value:
+                text += exercise.get("name", "") + ": " + str(exercise.get("sets", ""))
+            descriptions.append(text)
 
         params = {"name": request.POST.get("name"),
                   "user": username,
@@ -97,10 +112,11 @@ def create_cycle(request):
                   "days_count": int(request.POST.get("days_count")),
                   "pause": int(request.POST.get("pause")),
                   "start_at": request.POST.get("start_at"),
-                  "descriptions": descriptions}
+                  "descriptions": descriptions,
+                  "data_cycle": data_cycle}
 
         response = requests.post("http://127.0.0.1:8001/create_cycle/", json=params)
-        print(response.json())
+        # print(response.json())
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
@@ -155,7 +171,7 @@ def delete_note(request):
                   "password": password}
 
         response = requests.post("http://127.0.0.1:8001/delete_note/", json=params)
-        print(response.json())
+        # print(response.json())
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
@@ -174,13 +190,13 @@ def day(request):
                   "day": selected_date}
 
         response = requests.post("http://127.0.0.1:8001/day/", json=params)
-        print(response.json())
+        # print(response.json())
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
             request.session["selected_date"] = selected_date
             request.session["duties"] = response.json().get("duties")
-            print(response.json().get("duties"))
+            # print(response.json().get("duties"))
             return redirect("main_app:profile")
     return redirect("main_app:profile")
 
@@ -191,17 +207,23 @@ def duty(request):
         password = request.session.get("password")
         selected_date = request.POST.get("selected_date")
         duty_name = request.POST.get("duty_name")
-        print(selected_date, duty_name)
+        # print(selected_date, duty_name)
         params = {"password": password,
                   "user": username,
                   "selected_date": selected_date,
                   "duty_name": duty_name}
 
         response = requests.post("http://127.0.0.1:8001/duty/", json=params)
-        print(response.json())
+        # print(response.json())
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
             request.session["duties"] = response.json().get("duties").get(selected_date)
             return redirect("main_app:profile")
     return redirect("main_app:profile")
+
+
+
+
+
+

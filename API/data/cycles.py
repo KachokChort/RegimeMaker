@@ -11,6 +11,7 @@ class Cycle(Base):
     user = Column(String(50), nullable=False)
     days_count = Column(Integer)
     descriptions = Column(JSON)
+    data = Column(JSON)
     pause = Column(Integer)
     start_at = Column(String(50))
 
