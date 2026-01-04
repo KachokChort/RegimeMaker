@@ -7,16 +7,206 @@
     "id": 1,
     "muscles": {
       "back": 0.7,
-      "biceps": 0.3
+      "biceps": 0.3,
+      "forearms": 0.2,
+      "abs": 0.2,
+      "traps": 0.2,
+      "chest": 0.1
     },
-    "name": "Подтягивания(Pull Ups)"
+    "name": "Подтягивания (Pull Ups)"
   },
   {
     "id": 2,
     "muscles": {
-      "chest": 0.7,
-      "triceps": 0.3
+      "chest": 0.8,
+      "triceps": 0.5,
+      "abs": 0.2,
+      "front_delts": 0.4,
+      "back": 0.1
     },
-    "name": "Отжимания(Push Ups)"
+    "name": "Отжимания (Push Ups)"
+  },
+  {
+    "id": 3,
+    "muscles": {
+      "quads": 0.8,
+      "glutes": 0.6,
+      "hamstrings": 0.3,
+      "calves": 0.3
+    },
+    "name": "Приседания со штангой (Barbell Squats)"
+  },
+  {
+    "id": 4,
+    "muscles": {
+      "chest": 0.8,
+      "front_delts": 0.5,
+      "triceps": 0.2,
+      "abs": 0.2
+    },
+    "name": "Жим штанги лежа (Bench Press)"
+  },
+  {
+    "id": 5,
+    "muscles": {
+      "back": 0.7,
+      "biceps": 0.3,
+      "traps": 0.2
+    },
+    "name": "Тяга штанги в наклоне (Bent Over Row)"
+  },
+  {
+    "id": 6,
+    "muscles": {
+      "back": 0.8,
+      "rear_delts": 0.3,
+      "biceps": 0.2,
+      "abs": 0.2
+    },
+    "name": "Тяга Т-грифа (T-Bar Row)"
+  },
+  {
+    "id": 7,
+    "muscles": {
+      "glutes": 0.6,
+      "hamstrings": 0.5,
+      "back": 0.2
+    },
+    "name": "Становая тяга (Deadlift)"
+  },
+  {
+    "id": 8,
+    "muscles": {
+      "quads": 0.7,
+      "glutes": 0.6,
+      "hamstrings": 0.4,
+      "calves": 0.3,
+      "abs": 0.2
+    },
+    "name": "Жим ногами (Leg Press)"
+  },
+  {
+    "id": 9,
+    "muscles": {
+      "front_delts": 0.6,
+      "rear_delts": 0.3,
+      "traps": 0.3
+    },
+    "name": "Армейский жим (Overhead Press)"
+  },
+  {
+    "id": 10,
+    "muscles": {
+      "hamstrings": 0.9,
+      "glutes": 0.3,
+      "calves": 0.3
+    },
+    "name": "Сгибания ног лежа (Lying Leg Curls)"
+  },
+  {
+    "id": 11,
+    "muscles": {
+      "quads": 0.9,
+      "glutes": 0.2,
+      "abs": 0.2
+    },
+    "name": "Разгибания ног (Leg Extensions)"
+  },
+  {
+    "id": 12,
+    "muscles": {
+      "calves": 0.9,
+      "quads": 0.1
+    },
+    "name": "Подъемы на носки стоя (Standing Calf Raises)"
+  },
+  {
+    "id": 13,
+    "muscles": {
+      "chest": 0.7,
+      "front_delts": 0.6,
+      "triceps": 0.2
+    },
+    "name": "Жим гантелей лежа (Dumbbell Bench Press)"
+  },
+  {
+    "id": 14,
+    "muscles": {
+      "biceps": 0.9,
+      "forearms": 0.2,
+      "abs": 0.1
+    },
+    "name": "Подъем штанги на бицепс (Barbell Biceps Curl)"
+  },
+  {
+    "id": 15,
+    "muscles": {
+      "triceps": 0.8,
+      "chest": 0.2,
+      "abs": 0.1
+    },
+    "name": "Французский жим (Triceps Extension)"
+  },
+  {
+    "id": 16,
+    "muscles": {
+      "abs": 0.9,
+      "front_delts": 0.1
+    },
+    "name": "Скручивания на пресс (Crunches)"
+  },
+  {
+    "id": 17,
+    "muscles": {
+      "glutes": 0.8,
+      "hamstrings": 0.4,
+      "back": 0.1
+    },
+    "name": "Румынская тяга (Romanian Deadlift)"
+  },
+  {
+    "id": 18,
+    "muscles": {
+      "traps": 0.7,
+      "front_delts": 0.4,
+      "rear_delts": 0.2
+    },
+    "name": "Шраги со штангой (Barbell Shrugs)"
+  },
+  {
+    "id": 19,
+    "muscles": {
+      "back": 0.8,
+      "rear_delts": 0.4,
+      "biceps": 0.2
+    },
+    "name": "Тяга верхнего блока (Lat Pulldown)"
+  },
+  {
+    "id": 20,
+    "muscles": {
+      "rear_delts": 0.6,
+      "traps": 0.4,
+      "back": 0.1
+    },
+    "name": "Тяга штанги к подбородку (Upright Row)"
+  },
+  {
+    "id": 21,
+    "muscles": {
+      "abs": 0.6,
+      "front_delts": 0.2,
+      "quads": 0.1,
+      "glutes": 0.1
+    },
+    "name": "Планка (Plank)"
+  },
+  {
+    "id": 22,
+    "muscles": {
+      "forearms": 0.8,
+      "biceps": 0.2
+    },
+    "name": "Сгибания запястий (Wrist Curls)"
   }
 ]

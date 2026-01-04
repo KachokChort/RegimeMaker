@@ -14,13 +14,13 @@ MUSCLE_GROUPS = {
     },
     'biceps': {
         'name': 'Бицепс',
-        'optimal_weekly': 6,
+        'optimal_weekly': 9,
         'recovery_days': 2,
         'color': '#4ecdc4'
     },
     'triceps': {
         'name': 'Трицепс',
-        'optimal_weekly': 8,
+        'optimal_weekly': 9,
         'recovery_days': 2,
         'color': '#118ab2'
     },
@@ -34,7 +34,7 @@ MUSCLE_GROUPS = {
     # Верх тела (зад)
     'back': {
         'name': 'Широчайшие спины',
-        'optimal_weekly': 15,
+        'optimal_weekly': 13,
         'recovery_days': 2,
         'color': '#ff8e53'
     },

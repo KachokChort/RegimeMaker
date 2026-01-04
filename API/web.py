@@ -471,63 +471,6 @@ async def duty(request: Request):
         return {"error": f"{e}"}
 
 
-# @app.post("/analytics/")
-# async def analytics(request: Request):
-#     body = await request.body()
-#
-#     data = json.loads(body)
-#     cycle_name = data.get("cycle_name")
-#     username = data.get("user")
-#     password = data.get("password")
-#
-#     # print(selected_date, duty_name)
-#
-#     if not username:
-#         return {"error": "User is required parameter."}
-#     if not password:
-#         return {"error": "Password is required parameter."}
-#     try:
-#         with open('db/exercise.json', encoding="utf-8") as f:
-#             EXERCISES = json.load(f)
-#         db_session.global_init("db/db.db")
-#         db_sess = db_session.create_session()
-#         users = [user.username for user in db_sess.query(User).all()]
-#         if username not in users:
-#             return {"error": "Invalid user."}
-#         user_password = db_sess.query(User).filter(User.username == username).first().password
-#         if password != user_password:
-#             return {"error": f"Invalid password."}
-#         user = db_sess.query(User).filter(User.username == username).first()
-#         user_cycles = [cycle.name for cycle in db_sess.query(Cycle).filter(Cycle.user == username)]
-#         print(user_cycles)
-#         if cycle_name not in user_cycles:
-#             return {"error": f"Invalid cycle."}
-#         cycle = db_sess.query(Cycle).filter(Cycle.user == username, Cycle.name == cycle_name).first()
-#         data_cycle = cycle.data
-#         analytics = {F"day{i + 1}":{muscle:0.0 for muscle in MUSCLE_GROUPS.keys()} for i in range(len(data_cycle))}
-#         for name_day in data_cycle:
-#             day = data_cycle.get(name_day)
-#             for day_exercise in day:
-#                 print(day_exercise)
-#                 day_exercise_id = int(day_exercise["id"])
-#                 muscles_exercise = EXERCISES[day_exercise_id].get("muscles", [])
-#                 print(muscles_exercise)
-#                 for muscle in muscles_exercise:
-#                     print(analytics, day_exercise.get("sets"))
-#                     analytics[name_day][muscle] += round(muscles_exercise.get(muscle) * day_exercise.get("sets"), 2)
-#
-#
-#         print(analytics)
-#         return analytics
-#
-#
-#     except sqlite3.IntegrityError as e:
-#         print(e)
-#         return {"error": f"{e}"}
-#     except Exception as e:
-#         print(e)
-#         return {"error": f"{e}"}
-
 @app.post("/analytics/")
 async def analytics(request: Request):
     body = await request.body()
@@ -571,6 +514,7 @@ async def analytics(request: Request):
         # РАСЧЕТ ДНЕВНОЙ АНАЛИТИКИ И АНАЛИТИКИ ЗА ТРЕНИРОВКУ
         daily_analytics = {}
         total_analytics = {muscle: 0.0 for muscle in MUSCLE_GROUPS.keys()}
+        days_count = len(cycle_data)
 
         for day_name, day_exercises in cycle_data.items():
             # print(f"Processing {day_name}: {day_exercises}")
@@ -593,13 +537,13 @@ async def analytics(request: Request):
                         muscle_pr = float(pr)
                     except (ValueError, TypeError):
                         muscle_pr = 0.0
-                    load_contribution = sets_count * muscle_pr
+                    load = sets_count * muscle_pr
 
                     if muscle in day_load:
-                        day_load[muscle] += round(load_contribution, 2)
+                        day_load[muscle] += round(load * (7 / days_count), 2)
 
                     if muscle in total_analytics:
-                        total_analytics[muscle] += round(load_contribution, 2)
+                        total_analytics[muscle] += round(load * (7 / days_count), 2)
 
             daily_analytics[day_name] = day_load
 
@@ -610,38 +554,35 @@ async def analytics(request: Request):
         if days_count > 0:
             for muscle in MUSCLE_GROUPS.keys():
                 total = sum(daily_analytics[day][muscle] for day in daily_analytics)
-                avg_daily[muscle] = round(total / days_count, 2)
+                avg_daily[muscle] = round(total * (7 / days_count), 2)
 
-        # Процентное распределение
-        optimal_percentages = {}
+        # СЧИТАЕМ СКОЛЬКО ПРОЦЕНТОВ ОТ ОПТИМАЛЬНОГО
+        optimal_prs = {}
 
         for muscle_id, load in total_analytics.items():
-            # Получаем оптимальную нагрузку для этой мышцы
             muscle_info = MUSCLE_GROUPS.get(muscle_id, {})
-            optimal_weekly = muscle_info.get('optimal_weekly', 10)  # по умолчанию 10
+            optimal_weekly = muscle_info.get('optimal_weekly', 10)
 
-            # Считаем процент от оптимальной (нагрузка уже недельная если цикл на неделю)
             if optimal_weekly > 0:
-                percentage = round((load / optimal_weekly) * 100, 1)
+                pr = round((load / optimal_weekly) * 100, 1)
             else:
-                percentage = 0
+                pr = 0
 
-            optimal_percentages[muscle_id] = percentage
+            optimal_prs[muscle_id] = pr
 
-        # 2. СТАТУС НАГРУЗКИ
+        # СТАТУС НАГРУЗКИ
         load_status = {}
-
-        for muscle_id, percentage in optimal_percentages.items():
-            if percentage > 130:
+        for muscle_id, pr in optimal_prs.items():
+            if pr > 130:
                 status = "overloaded"
                 color = "#ff4444"
-            elif percentage > 80:
+            elif pr > 80:
                 status = "optimal"
                 color = "#44ff44"
-            elif percentage > 40:
+            elif pr > 40:
                 status = "moderate"
                 color = "#ffa500"
-            elif percentage > 10:
+            elif pr > 10:
                 status = "underloaded"
                 color = "#ffff00"
             else:
@@ -651,7 +592,7 @@ async def analytics(request: Request):
             load_status[muscle_id] = {
                 "status": status,
                 "color": color,
-                "percentage": percentage
+                "pr": pr
             }
 
         # 3. РЕКОМЕНДАЦИИ
@@ -659,23 +600,23 @@ async def analytics(request: Request):
 
         for muscle_id, data in load_status.items():
             muscle_name = MUSCLE_GROUPS[muscle_id]['name']
-            percentage = data['percentage']
+            pr = data['pr']
             status = data['status']
 
             if status == "overloaded":
-                rec = f"{muscle_name}: Перегрузка ({percentage}%). Снизьте нагрузку."
+                rec = f"{muscle_name}: Перегрузка ({pr}%). Снизьте нагрузку."
                 priority = "high"
             elif status == "optimal":
-                rec = f"{muscle_name}: Оптимально ({percentage}%)."
+                rec = f"{muscle_name}: Оптимально ({pr}%)."
                 priority = "low"
             elif status == "moderate":
-                rec = f"{muscle_name}: Средняя нагрузка ({percentage}%). Можно увеличить."
+                rec = f"{muscle_name}: Средняя нагрузка ({pr}%). Можно увеличить."
                 priority = "medium"
             elif status == "underloaded":
-                rec = f"{muscle_name}: Недогруз ({percentage}%). Добавьте упражнения."
+                rec = f"{muscle_name}: Недогруз ({pr}%). Добавьте упражнения."
                 priority = "high"
             else:
-                rec = f"{muscle_name}: Не тренируется ({percentage}%)."
+                rec = f"{muscle_name}: Не тренируется ({pr}%)."
                 priority = "high"
 
             recommendations.append({
@@ -683,11 +624,9 @@ async def analytics(request: Request):
                 "priority": priority,
                 "muscle": muscle_name
             })
-
-        # Сортируем рекомендации по важности
         recommendations.sort(key=lambda x: {"high": 0, "medium": 1, "low": 2}[x["priority"]])
 
-        # Подготовка результата
+        # РЕЗУЛЬТАТ
         result = {
             "verdict": "Analytics calculated successfully",
             "cycle_name": cycle_name,
@@ -695,11 +634,9 @@ async def analytics(request: Request):
             "daily_analytics": daily_analytics,
             "total_analytics": total_analytics,
             "average_daily": avg_daily,
-            # ЗАМЕНИЛИ percentage_distribution на:
-            "optimal_percentages": optimal_percentages,
+            "optimal_percentages": optimal_prs,
             "load_status": load_status,
-            "recommendations": recommendations[:5],  # топ-5 рекомендаций
-            "muscle_groups": MUSCLE_GROUPS
+            "recommendations": recommendations[:5],
         }
 
         return result

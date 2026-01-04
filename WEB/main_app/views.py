@@ -5,6 +5,8 @@ import requests
 import datetime
 
 
+ADDRESS = "http://127.0.0.1:8001/"
+
 def index(request):
     request.session.flush()
     return render(request, "index.html", {"name": "Tayler"})
@@ -17,7 +19,7 @@ def register(request):
 
         params = {"username": username,
                   "password": password}
-        response = requests.post("http://127.0.0.1:8001/sign_up/", json=params)
+        response = requests.post(f"{ADDRESS}sign_up/", json=params)
         data = response.json()
         if "error" in data:
             return render(request, "register.html", context={"error": data["error"]})
@@ -35,7 +37,7 @@ def login(request):
 
         params = {"username": username,
                   "password": password}
-        response = requests.post("http://127.0.0.1:8001/user/", json=params)
+        response = requests.post(f"{ADDRESS}user/", json=params)
         data = response.json()
         if "error" in data:
             return render(request, "login.html", context={"error": data["error"]})
@@ -55,14 +57,14 @@ def profile(request):
     # обработка входа
     params_1 = {"username": username,
                 "password": password}
-    response = requests.post("http://127.0.0.1:8001/user/", json=params_1)
+    response = requests.post(f"{ADDRESS}user/", json=params_1)
     if "error" in response.json():
         return redirect("main_app:register")
 
     # циклы получаем
     params_cycle = {"user": username,
                     "password": password}
-    response_user_cycles = requests.post("http://127.0.0.1:8001/user_cycles/", json=params_cycle)
+    response_user_cycles = requests.post(f"{ADDRESS}user_cycles/", json=params_cycle)
     data = response_user_cycles.json()
     # print(data)
     if "verdict" in data:
@@ -73,7 +75,7 @@ def profile(request):
     # заметки получаем
     params_note = {"user": username,
                    "password": password}
-    response_user_notes = requests.post("http://127.0.0.1:8001/get_notes/", json=params_note)
+    response_user_notes = requests.post(f"{ADDRESS}get_notes/", json=params_note)
     data = response_user_notes.json()
     # print(data)
     if "verdict" in data:
@@ -81,7 +83,7 @@ def profile(request):
     else:
         notes = []
 
-    exercises = requests.post("http://127.0.0.1:8001/get_exercises/")
+    exercises = requests.post(f"{ADDRESS}get_exercises/")
 
     exercises = exercises.json()
     # print(exercises, "----------------------------------------------")
@@ -115,7 +117,7 @@ def create_cycle(request):
                   "descriptions": descriptions,
                   "data_cycle": data_cycle}
 
-        response = requests.post("http://127.0.0.1:8001/create_cycle/", json=params)
+        response = requests.post(f"{ADDRESS}create_cycle/", json=params)
         # print(response.json())
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
@@ -135,7 +137,7 @@ def create_note(request):
                   "password": password,
                   "descriptions": request.POST.get("descriptions")}
 
-        response = requests.post("http://127.0.0.1:8001/create_note/", json=params)
+        response = requests.post(f"{ADDRESS}create_note/", json=params)
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
@@ -153,7 +155,7 @@ def delete_cycle(request):
                   "user": username,
                   "password": password}
 
-        response = requests.post("http://127.0.0.1:8001/delete_cycle/", json=params)
+        response = requests.post(f"{ADDRESS}delete_cycle/", json=params)
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
         else:
@@ -170,7 +172,7 @@ def delete_note(request):
                   "user": username,
                   "password": password}
 
-        response = requests.post("http://127.0.0.1:8001/delete_note/", json=params)
+        response = requests.post(f"{ADDRESS}delete_note/", json=params)
         # print(response.json())
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
@@ -189,7 +191,7 @@ def day(request):
                   "user": username,
                   "day": selected_date}
 
-        response = requests.post("http://127.0.0.1:8001/day/", json=params)
+        response = requests.post(f"{ADDRESS}day/", json=params)
         # print(response.json())
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
@@ -213,7 +215,7 @@ def duty(request):
                   "selected_date": selected_date,
                   "duty_name": duty_name}
 
-        response = requests.post("http://127.0.0.1:8001/duty/", json=params)
+        response = requests.post(f"{ADDRESS}duty/", json=params)
         # print(response.json())
         if "error" in response.json():
             return HttpResponse(response.json().get("error"))
@@ -223,7 +225,19 @@ def duty(request):
     return redirect("main_app:profile")
 
 
+def analyze(request):
+    if request.method == "POST":
+        username = request.session.get("username")
+        password = request.session.get("password")
+        cycle_name = request.POST.get("cycle_name")
+        params = {"password": password,
+                  "user": username,
+                  "cycle_name": cycle_name}
 
-
-
-
+        response = requests.post(f"{ADDRESS}analytics/", json=params)
+        context = response.json()
+        context = {"analysis": context}
+        if "error" in response.json():
+            return HttpResponse(response.json().get("error"))
+        else:
+            return render(request, "analitics.html", context)

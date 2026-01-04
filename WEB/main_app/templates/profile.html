@@ -608,6 +608,15 @@
                 <div class="cycle-card">
                     <div class="cycle-header">
                         <h3>{{ cycle.name }}</h3>
+                        <form method="post" action="{% url 'main_app:analyze' %}"
+                              style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="cycle_name" value="{{ cycle.name }}">
+                            <input type="hidden" name="user" value="{{ username }}">
+                            <button type="submit" class="analyze-btn">
+                                📊 Анализ
+                            </button>
+                        </form>
                         <form method="post" action="{% url 'main_app:delete_cycle' %}" style="display: inline;">
                             {% csrf_token %}
                             <input type="hidden" name="cycle_name" value="{{ cycle.name }}">
