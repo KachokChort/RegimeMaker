@@ -88,9 +88,11 @@ def profile(request):
     exercises = exercises.json()
     # print(exercises, "----------------------------------------------")
 
+    tab = request.session.get("tab", "profile")
+
     context = {"cycles": cycles, "notes": notes, "duties": duties, "selected_date": selected_date, "username": username,
-               "exercises": exercises}
-    return render(request, "profile.html", context)
+               "exercises": exercises, "tab": tab}
+    return render(request, "profile1.html", context)
 
 
 def create_cycle(request):
@@ -104,8 +106,11 @@ def create_cycle(request):
         descriptions = []
         for key, value in data_cycle.items():
             text = ""
-            for exercise in value:
-                text += exercise.get("name", "") + ": " + str(exercise.get("sets", ""))
+            for i, exercise in enumerate(value):
+                text += f"{i + 1}. " + exercise.get("name", "") + ": " + str(exercise.get("sets", "")) + "<br>"
+                if exercise.get("name", "") == "Отдых":
+                    text = "Отдых"
+                    break
             descriptions.append(text)
 
         params = {"name": request.POST.get("name"),
@@ -198,7 +203,7 @@ def day(request):
         else:
             request.session["selected_date"] = selected_date
             request.session["duties"] = response.json().get("duties")
-            # print(response.json().get("duties"))
+            print(response.json().get("duties"))
             return redirect("main_app:profile")
     return redirect("main_app:profile")
 
@@ -241,3 +246,11 @@ def analyze(request):
             return HttpResponse(response.json().get("error"))
         else:
             return render(request, "analitics.html", context)
+
+
+def navigation(request):
+    if request.method == "POST":
+        tab = request.POST.get("nav_button")
+        request.session["tab"] = tab
+
+        return redirect("main_app:profile")

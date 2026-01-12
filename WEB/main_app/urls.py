@@ -14,4 +14,5 @@ urlpatterns = [
     path("day/", views.day, name="day"),
     path("duty/", views.duty, name="duty"),
     path("analyze/", views.analyze, name="analyze"),
+    path("navigation/", views.navigation, name="navigation"),
 ]

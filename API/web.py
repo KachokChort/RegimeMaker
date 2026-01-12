@@ -131,6 +131,7 @@ async def create_cycle(request: Request):
         new_cycle.days_count = days_count
         new_cycle.pause = pause
         new_cycle.descriptions = descriptions
+        # print(descriptions)
         new_cycle.data = data_cycle
         new_cycle.start_at = start_at
         db_sess.add(new_cycle)
@@ -434,7 +435,7 @@ async def duty(request: Request):
     username = data.get("user")
     password = data.get("password")
 
-    # print(selected_date, duty_name)
+    print(selected_date, duty_name)
 
     if not username:
         return {"error": "User is required parameter."}
