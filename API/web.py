@@ -10,7 +10,7 @@ from data.notes import Note
 from data.muscles import MUSCLE_GROUPS
 
 app = FastAPI()
-
+db_session.global_init("db/db.db")
 
 @app.get("/")
 def index():
@@ -28,7 +28,6 @@ async def user(request: Request):
         return {"error": "Username and password are required params."}
 
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if username not in users:
@@ -58,7 +57,6 @@ async def sign_up(request: Request):
         return {"error": "Short password."}
 
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if username in users:
@@ -114,7 +112,6 @@ async def create_cycle(request: Request):
     if pause < 0:
         return {"error": "Negative pause."}
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if user not in users:
@@ -163,7 +160,6 @@ async def day(request: Request):
     if not day:
         return {"error": "Day is required parameter."}
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
 
         user_obj = db_sess.query(User).filter(User.username == user).first()
@@ -237,7 +233,6 @@ async def delete_cycle(request: Request):
     if not password:
         return {"error": "Password is required parameter."}
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if user not in users:
@@ -277,7 +272,6 @@ async def get_cycles(request: Request):
     if not password:
         return {"error": "Password is required parameter."}
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if user not in users:
@@ -319,7 +313,6 @@ async def create_note(request: Request):
     if type(descriptions) is not str:
         return {"error": "Invalid description."}
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if user not in users:
@@ -364,7 +357,6 @@ async def get_notes(request: Request):
     if not password:
         return {"error": "Password is required parameter."}
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if user not in users:
@@ -399,7 +391,6 @@ async def delete_note(request: Request):
     if not password:
         return {"error": "Password is required parameter."}
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if user not in users:
@@ -442,7 +433,6 @@ async def duty(request: Request):
     if not password:
         return {"error": "Password is required parameter."}
     try:
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         users = [user.username for user in db_sess.query(User).all()]
         if username not in users:
@@ -494,7 +484,6 @@ async def analytics(request: Request):
         with open('db/exercises.json', 'r', encoding="utf-8") as f:
             EXERCISES_DB = json.load(f)
 
-        db_session.global_init("db/db.db")
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == username).first()
         if not user:
@@ -668,6 +657,12 @@ if __name__ == "__main__":
         "web:app",
         host="0.0.0.0",
         port=8001,
-        reload=True,
-        log_level="info"
+        reload=False,
+        log_level="info",
+        workers=4,
+        loop="asyncio",
+        timeout_keep_alive=30,
+        limit_concurrency=100,
+        limit_max_requests=1000,
+        backlog=2048,
     )

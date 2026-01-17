@@ -4,8 +4,8 @@ from django.shortcuts import render, HttpResponse, redirect
 import requests
 import datetime
 
-
 ADDRESS = "http://127.0.0.1:8001/"
+
 
 def index(request):
     request.session.flush()
