@@ -177,7 +177,7 @@ async def day(request: Request):
         duties = {}
         for cycle in db_sess.query(Cycle).filter(Cycle.user == user).all():
             date_cycle = cycle.start_at
-            print(date_cycle)
+            # print(date_cycle)
             date_cycle = datetime.datetime.strptime(date_cycle, format_string).date()
             days = date - date_cycle
             days = days.days
@@ -202,7 +202,7 @@ async def day(request: Request):
             for i in duties:
                 if i in user_duties:
                     duties[i] = user_duties[i]
-            print(duties)
+            # print(duties)
             user_days = user_obj.days.copy()
             user_days[day] = duties
             user_obj.days = user_days.copy()
@@ -426,7 +426,7 @@ async def duty(request: Request):
     username = data.get("user")
     password = data.get("password")
 
-    print(selected_date, duty_name)
+    # print(selected_date, duty_name)
 
     if not username:
         return {"error": "User is required parameter."}
@@ -441,9 +441,9 @@ async def duty(request: Request):
         if password != user_password:
             return {"error": f"Invalid password."}
         user = db_sess.query(User).filter(User.username == username).first()
-        print(user.days.get(selected_date), duty_name)
+        # print(user.days.get(selected_date), duty_name)
         res = user.days.get(selected_date).get(duty_name)
-        print(res)
+        # print(res)
         new_days = user.days.copy()
         db_sess.commit()
         new_days[selected_date][duty_name] = 1 - res
@@ -499,7 +499,7 @@ async def analytics(request: Request):
         if not cycle_data:
             return {"error": f"Data cycle not found"}
 
-        print(cycle_data)
+        # print(cycle_data)
 
         # РАСЧЕТ ДНЕВНОЙ АНАЛИТИКИ И АНАЛИТИКИ ЗА ТРЕНИРОВКУ
         daily_analytics = {}
@@ -540,7 +540,7 @@ async def analytics(request: Request):
         # РАСЧЕТ СРЕДНЕЙ ДНЕВНОЙ АНАЛИТИКИ
         days_count = len(daily_analytics)
         avg_daily = {muscle: 0.0 for muscle in MUSCLE_GROUPS.keys()}
-
+        print
         if days_count > 0:
             for muscle in MUSCLE_GROUPS.keys():
                 total = sum(daily_analytics[day][muscle] for day in daily_analytics)
@@ -655,11 +655,11 @@ async def exercises(request: Request):
 if __name__ == "__main__":
     uvicorn.run(
         "web:app",
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=8001,
         reload=False,
         log_level="info",
-        workers=4,
+        workers=2,
         loop="asyncio",
         timeout_keep_alive=30,
         limit_concurrency=100,

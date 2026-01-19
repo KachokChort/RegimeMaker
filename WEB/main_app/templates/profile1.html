@@ -3,675 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль - Name</title>
+    <title>Профиль - {{ username }}</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: white;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: white; color: #333; display: flex; flex-direction: column; height: 100vh; }
+        .header { background: #ff4444; padding: 20px; text-align: center; color: white; }
+        .header h1 { margin: 0; font-size: 2em; }
+        .container { display: flex; flex: 1; }
+        .sidebar { width: 200px; background: #f8f8f8; padding: 20px; border-right: 1px solid #ddd; }
+        .content { flex: 1; padding: 20px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Кнопки */
+        .nav-btn, .btn, .btn-small, .delete-btn, .remove-exercise, .add-exercise-btn, .action {
+            background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;
+            padding: 12px; margin-bottom: 10px; width: 100%; text-align: center; font-size: 1em;
         }
+        .nav-btn { border: 2px solid #ff4444; background: white; color: #333; }
+        .nav-btn.active, .nav-btn:hover { background: #ff4444; color: white; }
+        .nav-btn:hover:not(.active) { background: #ffeaea; }
+        .btn { padding: 12px 30px; font-size: 1.1em; width: auto; }
+        .btn-small { padding: 8px 15px; font-size: 0.9em; width: auto; }
+        .delete-btn, .remove-exercise { padding: 5px 10px; font-size: 0.9em; width: auto; }
+        .add-exercise-btn { padding: 8px 15px; width: auto; margin: 0; }
+        .action { flex: 1; margin: 0; }
+        .btn:hover, .btn-small:hover, .delete-btn:hover, .remove-exercise:hover,
+        .add-exercise-btn:hover, .action:hover { background: #cc3333; }
 
-        .header {
-            background-color: #ff4444;
-            padding: 20px;
-            text-align: center;
-            color: white;
+        /* Карточки */
+        .cycle-card, .note-card, .profile-card, .day-selector, .day-summary,
+        .faq-section, .selected-exercises-container, .day-tab-content {
+            background: #f8f8f8; border-radius: 8px; padding: 15px; margin-bottom: 20px;
         }
+        .cycle-card, .note-card, .profile-card { border: 2px solid #ff4444; }
+        .day-selector, .day-summary { border: 1px solid #ddd; }
+        .day-summary { background: #e8f5e8; border-color: #c8e6c9; }
 
-        .header h1 {
-            margin: 0;
-            font-size: 2em;
+        /* Заголовки */
+        .cycle-header, .note-header { display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+        .cycle-header h3, .note-header h3, .exercise-name, .info-label, .selected-date h3 {
+            margin: 0; color: #ff4444; font-weight: bold; }
+
+        /* Списки */
+        .cycles-list, .notes-list, .simple-profile { display: grid; gap: 20px; max-width: 800px; }
+        .cycle-descriptions ul, .faq-answer ul, .faq-answer ol { margin: 10px 0; padding-left: 20px; }
+        .cycle-descriptions li, .faq-answer li { margin-bottom: 5px; }
+
+        /* Формы */
+        .create-form { max-width: 600px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        .form-group input, .form-group textarea, .exercise-select, .small-input {
+            width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px;
+            font-size: 1em; box-sizing: border-box; font-family: Arial, sans-serif;
         }
-
-        .container {
-            display: flex;
-            flex: 1;
-        }
-
-        .sidebar {
-            width: 200px;
-            background-color: #f8f8f8;
-            padding: 20px;
-            border-right: 1px solid #ddd;
-        }
-
-        .nav-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            background-color: white;
-            color: #333;
-            border: 2px solid #ff4444;
-            border-radius: 5px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .nav-btn.active {
-            background-color: #ff4444;
-            color: white;
-        }
-
-        .nav-btn:hover:not(.active) {
-            background-color: #ffeaea;
-        }
-
-        .content {
-            flex: 1;
-            padding: 20px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .profile-info {
-            max-width: 500px;
-        }
-
-        .info-item {
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #f8f8f8;
-            border-radius: 5px;
-        }
-
-        .info-label {
-            font-weight: bold;
-            color: #ff4444;
-        }
-
-        .cycles-list {
-        display: grid;
-        gap: 20px;
-        max-width: 800px;
-        }
-
-        .cycle-card {
-            border: 2px solid #ff4444;
-            border-radius: 8px;
-            padding: 15px;
-            background-color: #f8f8f8;
-        }
-
-        .cycle-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .cycle-header h3 {
-            margin: 0;
-            color: #ff4444;
-        }
-
-        .delete-btn {
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-
-        .delete-btn:hover {
-            background-color: #cc3333;
-        }
-
-        .cycle-info {
-            margin-bottom: 15px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            padding: 3px 0;
-        }
-
-        .cycle-descriptions {
-            margin-top: 10px;
-        }
-
-        .cycle-descriptions ul {
-            margin: 5px 0;
-            padding-left: 20px;
-        }
-
-        .cycle-descriptions li {
-            margin-bottom: 3px;
-        }
-
-        .no-cycles {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        .notes-list {
-            display: grid;
-            gap: 20px;
-            max-width: 800px;
-        }
-
-        .note-card {
-            border: 2px solid #ff4444;
-            border-radius: 8px;
-            padding: 15px;
-            background-color: #f8f8f8;
-        }
-
-        .note-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .note-header h3 {
-            margin: 0;
-            color: #ff4444;
-        }
-
-        .note-content {
-            line-height: 1.5;
-        }
-
-        .note-content p {
-            margin: 0;
-            white-space: pre-wrap; /* Сохраняет переносы строк */
-        }
-
-        .no-notes {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        .create-form {
-            max-width: 600px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: #ff4444;
-            outline: none;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-group small {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #cc3333;
-        }
-        .day-selector {
-            margin-bottom: 30px;
-            padding: 15px;
-            background-color: #f8f8f8;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-
-        .date-form {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .date-form label {
-            font-weight: bold;
-        }
-
-        .date-form input[type="date"] {
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-
-        .date-form input[type="date"]:focus {
-            border-color: #ff4444;
-            outline: none;
-        }
-
-        .btn-small {
-            padding: 8px 15px;
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-
-        .btn-small:hover {
-            background-color: #cc3333;
-        }
-
-        .selected-date {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ff4444;
-        }
-
-        .selected-date h3 {
-            color: #ff4444;
-            margin: 0;
-        }
-
-        .duties-list {
-            max-width: 600px;
-            margin-bottom: 30px;
-        }
-
-        .duty-item {
-            padding: 12px;
-            margin-bottom: 10px;
-            background-color: #f8f8f8;
-            border-left: 4px solid #ff4444;
-            border-radius: 5px;
-        }
-
-        .duty-checkbox {
-            display: flex;
-            align-items: center;
-        }
-
-        .duty-checkbox input[type="checkbox"] {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .duty-checkbox label {
-            font-size: 1.1em;
-            cursor: pointer;
-            flex-grow: 1;
-        }
-
-        .duty-checkbox input[type="checkbox"]:checked + label {
-            text-decoration: line-through;
-            color: #666;
-        }
-
-        .no-duties {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-style: italic;
-        }
-
-        .day-summary {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e8f5e8;
-            border-radius: 8px;
-            border: 1px solid #c8e6c9;
-        }
-
-        .day-summary p {
-            margin: 5px 0;
-            color: #2e7d32;
-        }
-            .selected-exercises-container {
-        background-color: #f8f8f8;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 10px;
-        margin-bottom: 15px;
-        min-height: 50px;
-    }
-
-    .exercise-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px;
-        margin-bottom: 5px;
-        background-color: white;
-        border: 1px solid #ff4444;
-        border-radius: 4px;
-    }
-
-    .exercise-info {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-
-    .exercise-name {
-        font-weight: bold;
-        color: #ff4444;
-    }
-
-    .exercise-sets {
-        color: #666;
-    }
-
-    .remove-exercise {
-        background-color: #ff4444;
-        color: white;
-        border: none;
-        padding: 3px 8px;
-        border-radius: 3px;
-        cursor: pointer;
-        font-size: 0.9em;
-    }
-
-    .remove-exercise:hover {
-        background-color: #cc3333;
-    }
-
-    .add-exercise-form {
-        margin-top: 15px;
-    }
-
-    .exercise-select-row {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .exercise-select {
-        flex: 1;
-        padding: 8px;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        min-width: 200px;
-    }
-
-    .sets-input {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .small-input {
-        width: 60px;
-        padding: 8px;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-    }
-
-    .add-exercise-btn {
-        padding: 8px 15px;
-        background-color: #ff4444;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .add-exercise-btn:hover {
-        background-color: #cc3333;
-    }
-        .days-tabs {
-        display: flex;
-        gap: 5px;
-        margin: 20px 0;
-        flex-wrap: wrap;
-    }
-
-    .day-tab {
-        padding: 10px 15px;
-        background-color: #f8f8f8;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-    }
-
-    .day-tab.active {
-        background-color: #ff4444;
-        color: white;
-        border-color: #ff4444;
-    }
-
-    .days-content {
-        margin: 20px 0;
-    }
-
-    .day-tab-content {
-        display: none;
-        padding: 20px;
-        background-color: #f8f8f8;
-        border-radius: 8px;
-    }
-
-    .day-tab-content.active {
-        display: block;
-    }
-
-    /* Остальные стили как в предыдущем примере */
-    .selected-exercises-container {
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 10px;
-        margin-bottom: 15px;
-        min-height: 50px;
-    }
-
-    .exercise-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px;
-        margin-bottom: 5px;
-        background-color: #f8f8f8;
-        border: 1px solid #ff4444;
-        border-radius: 4px;
-    }
-
-    .exercise-info {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-
-    .exercise-name {
-        font-weight: bold;
-        color: #ff4444;
-    }
-
-    .remove-exercise {
-        background-color: #ff4444;
-        color: white;
-        border: none;
-        padding: 3px 8px;
-        border-radius: 3px;
-        cursor: pointer;
-        font-size: 0.9em;
-    }
-        /* FAQ стили */
-    .faq-container {
-        max-width: 800px;
-    }
-
-    .faq-section {
-        margin-bottom: 30px;
-        padding: 15px;
-        background-color: #f8f8f8;
-        border-radius: 8px;
-    }
-
-    .faq-item {
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-
-    .faq-question {
-        padding: 15px;
-        background-color: white;
-        cursor: pointer;
-        font-weight: bold;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: background-color 0.3s;
-    }
-
-    .faq-question:hover {
-        background-color: #ffeaea;
-    }
-
-    .faq-toggle {
-        font-size: 1.5em;
-        color: #ff4444;
-        transition: transform 0.3s;
-    }
-
-    .faq-answer {
-        padding: 0;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease-out, padding 0.3s;
-        background-color: white;
-    }
-
-    .faq-item.active .faq-answer {
-        padding: 15px;
-        max-height: 1000px;
-    }
-
-    .faq-item.active .faq-toggle {
-        transform: rotate(45deg);
-    }
-
-    .faq-answer ul,
-    .faq-answer ol {
-        margin: 10px 0;
-        padding-left: 20px;
-    }
-
-    .faq-answer li {
-        margin-bottom: 5px;
-    }
-
-    .faq-answer p {
-        margin: 10px 0;
-    }
-
-    .faq-answer table {
-        margin: 10px 0;
-        border: 1px solid #ddd;
-    }
-        .simple-profile {
-        display: grid;
-        gap: 20px;
-        max-width: 800px;
-    }
-
-    .profile-card {
-        background: #f8f8f8;
-        border: 2px solid #ff4444;
-        border-radius: 10px;
-        padding: 20px;
-    }
-
-    .stats {
-        display: flex;
-        gap: 30px;
-        margin-top: 15px;
-    }
-
-    .stat {
-        text-align: center;
-    }
-
-    .stat .number {
-        display: block;
-        font-size: 2em;
-        font-weight: bold;
-        color: #ff4444;
-    }
-
-    .stat .label {
-        color: #666;
-        font-size: 0.9em;
-    }
-
-    .actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .action {
-        padding: 10px 20px;
-        background: #ff4444;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        flex: 1;
-    }
-
-    .action:hover {
-        background: #cc3333;
-    }
+        .form-group input:focus, .form-group textarea:focus,
+        .exercise-select:focus, .small-input:focus { border-color: #ff4444; outline: none; }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-group small { color: #666; font-size: 0.9em; }
+
+        /* Конструктор тренировок */
+        .days-tabs { display: flex; gap: 5px; margin: 20px 0; flex-wrap: wrap; }
+        .day-tab { padding: 10px 15px; background: #f8f8f8; border: 2px solid #ddd;
+            border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .day-tab.active { background: #ff4444; color: white; border-color: #ff4444; }
+        .days-content { margin: 20px 0; }
+        .exercise-item { display: flex; justify-content: space-between; align-items: center;
+            padding: 8px; margin-bottom: 5px; background: white; border: 1px solid #ff4444; border-radius: 4px; }
+        .exercise-info { display: flex; gap: 15px; align-items: center; }
+        .exercise-sets { color: #666; }
+        .exercise-select-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .exercise-select { flex: 1; min-width: 200px; padding: 8px; }
+        .sets-input { display: flex; align-items: center; gap: 5px; }
+        .small-input { width: 60px; padding: 8px; }
+        .add-exercise-form { margin-top: 15px; }
+
+        /* День/задачи */
+        .date-form { display: flex; align-items: center; gap: 10px; }
+        .date-form label { font-weight: bold; }
+        .selected-date { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #ff4444; }
+        .duties-list { max-width: 600px; margin-bottom: 30px; }
+        .duty-item { padding: 12px; margin-bottom: 10px; background: #f8f8f8;
+            border-left: 4px solid #ff4444; border-radius: 5px; }
+        .duty-checkbox { display: flex; align-items: center; }
+        .duty-checkbox input[type="checkbox"] { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; }
+        .duty-checkbox label { font-size: 1.1em; cursor: pointer; flex-grow: 1; }
+        .duty-checkbox input[type="checkbox"]:checked + label { text-decoration: line-through; color: #666; }
+
+        /* FAQ */
+        .faq-container { max-width: 800px; }
+        .faq-item { margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; }
+        .faq-question { padding: 15px; background: white; cursor: pointer; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; }
+        .faq-question:hover { background: #ffeaea; }
+        .faq-toggle { font-size: 1.5em; color: #ff4444; transition: transform 0.3s; }
+        .faq-answer { padding: 0; max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s; background: white; }
+        .faq-item.active .faq-answer { padding: 15px; max-height: 1000px; }
+        .faq-item.active .faq-toggle { transform: rotate(45deg); }
+        .faq-answer p { margin: 10px 0; }
+        .faq-answer table { margin: 10px 0; border: 1px solid #ddd; }
+
+        /* Профиль */
+        .simple-profile { display: grid; gap: 20px; max-width: 800px; }
+        .stats { display: flex; gap: 30px; margin-top: 15px; }
+        .stat { text-align: center; }
+        .stat .number { display: block; font-size: 2em; font-weight: bold; color: #ff4444; }
+        .stat .label { color: #666; font-size: 0.9em; }
+        .actions { display: flex; gap: 10px; margin-top: 15px; }
+
+        /* Текст */
+        .note-content p, .day-summary p { margin: 0; }
+        .note-content p { white-space: pre-wrap; line-height: 1.5; }
+        .day-summary p { color: #2e7d32; }
+        .no-cycles, .no-notes, .no-duties { text-align: center; padding: 40px; color: #666; }
+        .no-duties { font-style: italic; }
+        .info-item, .cycle-info .info-row { margin-bottom: 15px; padding: 10px; background: #f8f8f8; border-radius: 5px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 5px; padding: 3px 0; }
     </style>
 </head>
 <body>
+<!-- HTML остается без изменений -->
 <div class="header">
     <h1>Добро пожаловать, {{ username }}!</h1>
 </div>
@@ -681,8 +134,8 @@
         <button class="nav-btn active" onclick="showTab('profile')">Профиль</button>
         <button class="nav-btn" onclick="showTab('create_note')">Создать заметку</button>
         <button class="nav-btn" onclick="showTab('notes')">Заметки</button>
-        <button class="nav-btn" onclick="showTab('create_cycle')">Создать цикл</button>
-        <button class="nav-btn" onclick="showTab('cycles')">Циклы</button>
+        <button class="nav-btn" onclick="showTab('create_cycle')">Создать тренировку</button>
+        <button class="nav-btn" onclick="showTab('cycles')">Тренировки</button>
         <button class="nav-btn" onclick="showTab('day')">День</button>
         <button class="nav-btn" onclick="showTab('faq')">Вопросы-ответы</button>
     </div>
@@ -698,7 +151,7 @@
                     <div class="stats">
                         <div class="stat">
                             <span class="number">{{ cycles|length }}</span>
-                            <span class="label">Циклов</span>
+                            <span class="label">Тренировок</span>
                         </div>
                         <div class="stat">
                             <span class="number">{{ notes|length }}</span>
@@ -711,7 +164,7 @@
                     <h3>🚀 Быстрые действия</h3>
                     <div class="actions">
                         <button onclick="showTab('create_cycle')" class="action">
-                            📅 Новый цикл
+                            📅 Новая тренировка
                         </button>
                         <button onclick="showTab('create_note')" class="action">
                             📝 Новая заметка
@@ -721,7 +174,7 @@
 
                 {% if cycles %}
                 <div class="profile-card">
-                    <h3>📅 Последний цикл</h3>
+                    <h3>📅 Последняя тренировка</h3>
                     <p><strong>{{ cycles.0.name }}</strong></p>
                     <p>Дней: {{ cycles.0.days_count }}, Пауза: {{ cycles.0.pause }} дней</p>
                 </div>
@@ -761,7 +214,7 @@
 
         <!-- Вкладка Циклы -->
         <div id="cycles" class="tab-content">
-            <h2>Мои циклы</h2>
+            <h2>Мои тренировки</h2>
 
             <div class="cycles-list">
                 {% for cycle in cycles %}
@@ -773,7 +226,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="cycle_name" value="{{ cycle.name }}">
                             <input type="hidden" name="user" value="{{ username }}">
-                            <button type="submit" class="analyze-btn">
+                            <button type="submit" class="btn-small">
                                 📊 Анализ
                             </button>
                         </form>
@@ -788,7 +241,7 @@
                     </div>
                     <div class="cycle-info">
                         <div class="info-row">
-                            <span class="info-label">Дней в цикле:</span>
+                            <span class="info-label">Дней в тренировке:</span>
                             <span>{{ cycle.days_count }}</span>
                         </div>
                         <div class="info-row">
@@ -812,7 +265,7 @@
                 </div>
                 {% empty %}
                 <div class="no-cycles">
-                    <p>У вас пока нет циклов</p>
+                    <p>У вас пока нет тренировок</p>
                 </div>
                 {% endfor %}
             </div>
@@ -820,7 +273,7 @@
 
         <!-- Вкладка Создать цикл -->
         <div id="create_cycle" class="tab-content">
-            <h2>Создать новый цикл</h2>
+            <h2>Создать новую тренировку</h2>
 
             <form method="post" action="{% url 'main_app:create_cycle' %}" class="create-form">
                 {% csrf_token %}
@@ -849,19 +302,15 @@
                 </div>
 
                 <!-- Вкладки для каждого дня -->
-                <div class="days-tabs" id="days-tabs">
-                    <!-- Вкладки будут созданы JavaScript -->
-                </div>
+                <div class="days-tabs" id="days-tabs"></div>
 
                 <!-- Контейнер для контента дней -->
-                <div class="days-content" id="days-content">
-                    <!-- Контент каждого дня будет здесь -->
-                </div>
+                <div class="days-content" id="days-content"></div>
 
                 <!-- Скрытое поле для всех данных -->
                 <input type="hidden" id="cycle-data" name="cycle_data" value="{}">
 
-                <button type="submit" class="btn">Создать цикл</button>
+                <button type="submit" class="btn">Создать тренировку</button>
             </form>
 
             <template id="day-template">
@@ -884,7 +333,7 @@
 
                             <div class="sets-input">
                                 <label>Подходы:</label>
-                                <input type="number" class="sets-count" min="1" max="10" value="3">
+                                <input type="number" class="small-input sets-count" min="1" max="10" value="3">
                             </div>
 
                             <button type="button" class="add-exercise-btn" onclick="addExerciseToDay({{ day_number }})">
@@ -951,7 +400,8 @@
                             <input type="hidden" name="user" value="{{ username }}">
                             <input type="checkbox" id="duty_{{ forloop.counter }}"
                                    onchange="this.form.submit()" {% if completed %}checked{% endif %}>
-                            <label for="duty_{{ forloop.counter }}"><p style="white-space: pre-wrap;">{{ duty_name|safe }}</p></label>
+                            <label for="duty_{{ forloop.counter }}">
+                                <p style="white-space: pre-wrap;">{{ duty_name|safe }}</p></label>
                         </form>
                     </div>
                 </div>
@@ -1192,65 +642,34 @@
     }
 
     function showTab(tabName) {
-        // Скрыть все вкладки
         const tabs = document.querySelectorAll('.tab-content');
         tabs.forEach(tab => tab.classList.remove('active'));
-
-        // Показать выбранную вкладку
         document.getElementById(tabName).classList.add('active');
-
-        // Обновить активные кнопки
         const buttons = document.querySelectorAll('.nav-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
-
         event.target.classList.add('active');
-<!--        localStorage.setItem('currentTab', tabName);-->
     }
-
-<!--    document.addEventListener('DOMContentLoaded', function() {-->
-<!--        const savedTab = localStorage.getItem('currentTab');-->
-<!--        if (savedTab) {-->
-<!--            showTab(savedTab); // Восстанавливаем вкладку-->
-<!--        }-->
-<!--    });-->
 
     let cycleData = {};
     let currentDay = 1;
     let totalDays = 3;
 
-    // === 1. ИНИЦИАЛИЗАЦИЯ ===
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Страница загружена');
-
-        // Устанавливаем обработчик на изменение дней
         const daysCountInput = document.getElementById('days_count');
         daysCountInput.addEventListener('change', updateDays);
-
-        // Создаем вкладки
         createDayTabs();
     });
 
-    // === 2. СОЗДАЕМ ВКЛАДКИ ===
     function createDayTabs() {
-        console.log('Создаем вкладки, дней:', totalDays);
-
         const tabsContainer = document.getElementById('days-tabs');
         const contentContainer = document.getElementById('days-content');
-
-        // Очищаем
         tabsContainer.innerHTML = '';
         contentContainer.innerHTML = '';
 
-        // Создаем вкладки и контент
         for (let day = 1; day <= totalDays; day++) {
             const dayId = `day${day}`;
+            if (!cycleData[dayId]) cycleData[dayId] = [];
 
-            // Инициализируем если нет
-            if (!cycleData[dayId]) {
-                cycleData[dayId] = [];
-            }
-
-            // === 3.1. СОЗДАЕМ ВКЛАДКУ ===
             const tab = document.createElement('button');
             tab.type = 'button';
             tab.className = 'day-tab' + (day === 1 ? ' active' : '');
@@ -1258,113 +677,59 @@
             tab.onclick = () => showDay(day);
             tabsContainer.appendChild(tab);
 
-            // === 3.2. СОЗДАЕМ КОНТЕНТ ===
             const template = document.getElementById('day-template');
             const dayContent = template.content.cloneNode(true);
-
-            // Устанавливаем номер дня
             dayContent.querySelector('.day-number').textContent = day;
-
-            // Находим контейнер
             const dayContainer = dayContent.querySelector('.day-tab-content');
             dayContainer.id = `${dayId}-content`;
-            dayContainer.dataset.day = day; // Добавляем data-атрибут
-
-            if (day === 1) {
-                dayContainer.classList.add('active');
-            }
-
-            // Назначаем кнопке "Добавить" правильный обработчик
+            dayContainer.dataset.day = day;
+            if (day === 1) dayContainer.classList.add('active');
             const addButton = dayContainer.querySelector('.add-exercise-btn');
             addButton.setAttribute('onclick', `addExerciseToDay(${day})`);
-
             contentContainer.appendChild(dayContent);
-
-            // Обновляем отображение дня
             updateDayDisplay(dayId);
         }
-
         updateHiddenField();
     }
 
-    // === 3. ДОБАВЛЯЕМ УПРАЖНЕНИЕ ===
     window.addExerciseToDay = function(dayNumber) {
-        console.log('Функция addExerciseToDay вызвана для дня:', dayNumber);
-
         const dayId = `day${dayNumber}`;
         const dayContent = document.getElementById(`${dayId}-content`);
+        if (!dayContent) return;
 
-        if (!dayContent) {
-            console.error('Ошибка: не найден контейнер дня', dayId);
-            return;
-        }
-
-        // Находим элементы ВНУТРИ этого контейнера
         const exerciseSelect = dayContent.querySelector('.exercise-select');
         const setsCount = dayContent.querySelector('.sets-count');
-
-        console.log('Найден select:', exerciseSelect);
-        console.log('Найден sets-count:', setsCount);
-
         const selectedId = exerciseSelect.value;
         const selectedName = exerciseSelect.options[exerciseSelect.selectedIndex].text;
         const sets = parseInt(setsCount.value);
-
-        console.log('Выбрано:', selectedId, selectedName, sets);
 
         if (!selectedId) {
             alert('Выберите упражнение');
             return;
         }
 
-        // Добавляем в данные
-        if (!cycleData[dayId]) {
-            cycleData[dayId] = [];
-        }
-
-        cycleData[dayId].push({
-            id: selectedId,
-            name: selectedName,
-            sets: sets
-        });
-
-        console.log('Данные обновлены:', cycleData[dayId]);
-
-        // Обновляем отображение
+        if (!cycleData[dayId]) cycleData[dayId] = [];
+        cycleData[dayId].push({ id: selectedId, name: selectedName, sets: sets });
         updateDayDisplay(dayId);
-
-        // Сбрасываем форму
         exerciseSelect.value = '';
         setsCount.value = 3;
     };
 
-    // === 4. УДАЛЯЕМ УПРАЖНЕНИЕ ===
     window.removeExerciseFromDay = function(dayId, exerciseIndex) {
-        console.log('Удаляем упражнение', exerciseIndex, 'из', dayId);
-
         if (cycleData[dayId]) {
             cycleData[dayId].splice(exerciseIndex, 1);
             updateDayDisplay(dayId);
         }
     };
 
-    // === 5. ОБНОВЛЯЕМ ОТОБРАЖЕНИЕ ДНЯ ===
     function updateDayDisplay(dayId) {
-        console.log('Обновляем отображение дня:', dayId);
-
         const dayContent = document.getElementById(`${dayId}-content`);
-        if (!dayContent) {
-            console.error('День не найден:', dayId);
-            return;
-        }
+        if (!dayContent) return;
 
         const container = dayContent.querySelector('.selected-exercises-container');
         const exercises = cycleData[dayId] || [];
-
-        // Очищаем
         container.innerHTML = '';
 
-        // Добавляем упражнения
         exercises.forEach((exercise, index) => {
             const exerciseDiv = document.createElement('div');
             exerciseDiv.className = 'exercise-item';
@@ -1381,58 +746,37 @@
             container.appendChild(exerciseDiv);
         });
 
-        // Если пусто
         if (exercises.length === 0) {
             container.innerHTML = '<p style="color: #666; text-align: center;">Нет упражнений для этого дня</p>';
         }
-
         updateHiddenField();
     }
 
-    // === 6. ПЕРЕКЛЮЧАЕМ ДНИ ===
     function showDay(dayNumber) {
-        // Снимаем активные классы
-        document.querySelectorAll('.day-tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-
-        document.querySelectorAll('.day-tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-
-        // Добавляем активные классы
+        document.querySelectorAll('.day-tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.day-tab-content').forEach(content => content.classList.remove('active'));
         const activeTab = document.querySelector(`.day-tab:nth-child(${dayNumber})`);
         const activeContent = document.getElementById(`day${dayNumber}-content`);
-
         if (activeTab) activeTab.classList.add('active');
         if (activeContent) activeContent.classList.add('active');
-
         currentDay = dayNumber;
     }
 
-    // === 7. ОБНОВЛЯЕМ КОЛИЧЕСТВО ДНЕЙ ===
     function updateDays() {
         const daysCountInput = document.getElementById('days_count');
         totalDays = parseInt(daysCountInput.value) || 1;
-
         if (totalDays > 7) totalDays = 7;
-
-        // Просто пересоздаем ВСЕ данные
-        cycleData = {};  // ← ОЧИЩАЕМ ВСЁ
-
+        cycleData = {};
         for (let day = 1; day <= totalDays; day++) {
             cycleData[`day${day}`] = [];
         }
-
         createDayTabs();
         showDay(1);
         updateHiddenField();
     }
 
-    // === 8. ОБНОВЛЯЕМ СКРЫТОЕ ПОЛЕ ===
     function updateHiddenField() {
         document.getElementById('cycle-data').value = JSON.stringify(cycleData);
-        console.log('Данные сохранены:', cycleData);
     }
 </script>
 </body>

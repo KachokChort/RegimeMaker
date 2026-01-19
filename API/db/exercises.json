@@ -6,9 +6,9 @@
   {
     "id": 1,
     "muscles": {
-      "back": 0.7,
-      "biceps": 0.3,
-      "forearms": 0.2,
+      "back": 0.8,
+      "biceps": 0.4,
+      "forearms": 0.4,
       "abs": 0.2,
       "traps": 0.2,
       "chest": 0.1
@@ -61,7 +61,8 @@
       "back": 0.8,
       "rear_delts": 0.3,
       "biceps": 0.2,
-      "abs": 0.2
+      "abs": 0.2,
+      "forearms": 0.3
     },
     "name": "Тяга Т-грифа (T-Bar Row)"
   },
@@ -133,7 +134,7 @@
     "id": 14,
     "muscles": {
       "biceps": 0.9,
-      "forearms": 0.2,
+      "forearms": 0.4,
       "abs": 0.1
     },
     "name": "Подъем штанги на бицепс (Barbell Biceps Curl)"
@@ -178,7 +179,8 @@
     "muscles": {
       "back": 0.8,
       "rear_delts": 0.4,
-      "biceps": 0.2
+      "biceps": 0.2,
+      "forearms": 0.2
     },
     "name": "Тяга верхнего блока (Lat Pulldown)"
   },
